@@ -1,5 +1,6 @@
 import AVFoundation
 import CoreFoundation
+import CoreImage
 import CoreMedia
 import CoreVideo
 import Foundation
@@ -26,7 +27,8 @@ extension CaptureSessionController: AVCaptureVideoDataOutputSampleBufferDelegate
         lastPresentationTime = presentationTime
 
         let deliveredPixelFormat = CVPixelBufferGetPixelFormatType(pixelBuffer)
-        if deliveredPixelFormat != requestedOutputPixelFormat && !reportedPixelFormatMismatch {
+        if let requestedOutputPixelFormat,
+           deliveredPixelFormat != requestedOutputPixelFormat && !reportedPixelFormatMismatch {
             reportedPixelFormatMismatch = true
             DispatchQueue.main.async { [weak self] in
                 guard let self else {
@@ -39,7 +41,7 @@ extension CaptureSessionController: AVCaptureVideoDataOutputSampleBufferDelegate
                             stage: "pixel_format",
                             reason: L10n.tr(
                                 "Requested %@ but received %@",
-                                pixelFormatName(self.requestedOutputPixelFormat),
+                                pixelFormatName(requestedOutputPixelFormat),
                                 pixelFormatName(deliveredPixelFormat)
                             ),
                             decision: L10n.tr("Use delivered CVPixelBuffer format for the live processing path")
@@ -50,6 +52,8 @@ extension CaptureSessionController: AVCaptureVideoDataOutputSampleBufferDelegate
         }
 
         let metalSnapshot = metalPipeline.importPixelBuffer(pixelBuffer)
+        updateSoftwarePreview(from: pixelBuffer)
+
         if isFirstFrame {
             let firstFrameSnapshot = DiagnosticsSnapshot(
                 totalFrames: totalFrames,
@@ -116,6 +120,17 @@ extension CaptureSessionController: AVCaptureVideoDataOutputSampleBufferDelegate
 
         DispatchQueue.main.async { [weak self] in
             self?.diagnostics = snapshot
+        }
+    }
+
+    private func updateSoftwarePreview(from pixelBuffer: CVPixelBuffer) {
+        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        guard let cgImage = imageContext.createCGImage(ciImage, from: ciImage.extent) else {
+            return
+        }
+
+        DispatchQueue.main.async { [weak self] in
+            self?.previewImage = cgImage
         }
     }
 

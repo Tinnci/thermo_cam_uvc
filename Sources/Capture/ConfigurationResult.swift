@@ -5,4 +5,5 @@ struct ConfigurationResult {
     let fallbackEvents: [FallbackEvent]
     let controlStates: [CameraControlState]
     let recordingAvailable: Bool
+    let requiresNativeBackendOnNoFrames: Bool
 }

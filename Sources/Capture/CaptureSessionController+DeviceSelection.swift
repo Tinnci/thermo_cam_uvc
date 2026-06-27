@@ -77,7 +77,16 @@ extension CaptureSessionController {
         formats = availableFormats
 
         if selectedFormatID == nil || !availableFormats.contains(where: { $0.id == selectedFormatID }) {
-            selectedFormatID = manager.bestFormat(for: device, in: availableFormats)?.id
+            let discoveredDevices = manager.discoverDevices()
+            let useHikvisionCompatibility = shouldUseHikvisionCompatibilityProfile(
+                for: device,
+                discoveredDevices: discoveredDevices
+            )
+            selectedFormatID = manager.bestFormat(
+                for: device,
+                in: availableFormats,
+                useHikvisionCompatibility: useHikvisionCompatibility
+            )?.id
         }
 
         controlStates = manager.controlStates(for: device)

@@ -76,8 +76,12 @@ final class CameraDeviceManager {
         }
     }
 
-    func bestFormat(for device: AVCaptureDevice, in formats: [CameraFormatInfo]) -> CameraFormatInfo? {
-        if isHikvisionCamera(device),
+    func bestFormat(
+        for device: AVCaptureDevice,
+        in formats: [CameraFormatInfo],
+        useHikvisionCompatibility: Bool = false
+    ) -> CameraFormatInfo? {
+        if useHikvisionCompatibility,
            let preferred = hikvisionProfile.compatibilityFormat(in: formats) {
             return preferred
         }
@@ -89,9 +93,20 @@ final class CameraDeviceManager {
         hikvisionProfile.matches(device)
     }
 
-    func preferredOutputPixelFormat(for device: AVCaptureDevice) -> FourCharCode {
+    func preferredOutputPixelFormat(
+        for device: AVCaptureDevice,
+        supportedPixelFormats: [FourCharCode]
+    ) -> FourCharCode {
         if isHikvisionCamera(device) {
-            return hikvisionProfile.preferredOutputPixelFormat
+            return hikvisionProfile.preferredOutputPixelFormat(in: supportedPixelFormats)
+        }
+
+        if supportedPixelFormats.contains(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
+            return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+        }
+
+        if supportedPixelFormats.contains(kCVPixelFormatType_32BGRA) {
+            return kCVPixelFormatType_32BGRA
         }
 
         return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
@@ -109,16 +124,28 @@ final class CameraDeviceManager {
 
     func hikvisionFormatProfileEvent(
         for device: AVCaptureDevice,
-        selectedFormat: CameraFormatInfo
+        selectedFormat: CameraFormatInfo,
+        useHikvisionCompatibility: Bool
     ) -> FallbackEvent? {
-        hikvisionProfile.formatProfileEvent(for: device, selectedFormat: selectedFormat)
+        hikvisionProfile.formatProfileEvent(
+            for: device,
+            selectedFormat: selectedFormat,
+            useHikvisionCompatibility: useHikvisionCompatibility
+        )
     }
 
     func hikvisionOutputPixelFormatEvent(
         for device: AVCaptureDevice,
-        outputPixelFormat: FourCharCode
+        outputPixelFormat: FourCharCode,
+        supportedPixelFormats: [FourCharCode],
+        useHikvisionCompatibility: Bool
     ) -> FallbackEvent? {
-        hikvisionProfile.outputPixelFormatEvent(for: device, outputPixelFormat: outputPixelFormat)
+        hikvisionProfile.outputPixelFormatEvent(
+            for: device,
+            outputPixelFormat: outputPixelFormat,
+            supportedPixelFormats: supportedPixelFormats,
+            useHikvisionCompatibility: useHikvisionCompatibility
+        )
     }
 
     private func bestFormat(in formats: [CameraFormatInfo]) -> CameraFormatInfo? {

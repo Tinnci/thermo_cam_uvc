@@ -35,6 +35,7 @@ enum CaptureStreamState: String, Sendable {
     case waitingForFirstFrame
     case streaming
     case noFrames
+    case nativeBackendRequired
     case stopping
     case failed
 
@@ -50,6 +51,8 @@ enum CaptureStreamState: String, Sendable {
             return L10n.tr("Streaming")
         case .noFrames:
             return L10n.tr("No frames")
+        case .nativeBackendRequired:
+            return L10n.tr("Native backend required")
         case .stopping:
             return L10n.tr("Stopping")
         case .failed:
@@ -59,7 +62,7 @@ enum CaptureStreamState: String, Sendable {
 
     var needsOverlay: Bool {
         switch self {
-        case .idle, .starting, .waitingForFirstFrame, .noFrames, .failed:
+        case .idle, .starting, .waitingForFirstFrame, .noFrames, .nativeBackendRequired, .failed:
             return true
         case .streaming, .stopping:
             return false

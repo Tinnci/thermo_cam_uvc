@@ -4,7 +4,17 @@ import CoreVideo
 import Foundation
 
 struct HikvisionCameraProfile {
-    let preferredOutputPixelFormat: FourCharCode = kCVPixelFormatType_422YpCbCr8_yuvs
+    func preferredOutputPixelFormat(in supportedPixelFormats: [FourCharCode]) -> FourCharCode {
+        let preferences = [
+            kCVPixelFormatType_32BGRA,
+            kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+            kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+            kCVPixelFormatType_422YpCbCr8_yuvs,
+            kCVPixelFormatType_422YpCbCr8
+        ]
+
+        return preferences.first { supportedPixelFormats.contains($0) } ?? kCVPixelFormatType_32BGRA
+    }
 
     func matches(_ device: AVCaptureDevice) -> Bool {
         let name = device.localizedName.lowercased()
@@ -30,16 +40,17 @@ struct HikvisionCameraProfile {
 
     func formatProfileEvent(
         for device: AVCaptureDevice,
-        selectedFormat: CameraFormatInfo
+        selectedFormat: CameraFormatInfo,
+        useHikvisionCompatibility: Bool
     ) -> FallbackEvent? {
-        guard matches(device) else {
+        guard useHikvisionCompatibility else {
             return nil
         }
 
         return FallbackEvent(
             stage: "format_profile",
             reason: L10n.tr(
-                "Hikvision camera detected; Android APK uses YUY2/30fps and Windows proves a standard UVC video path exists"
+                "Hikvision bulk-only UVC camera detected; Windows can drive its standard UVC path, but macOS AVFoundation may enumerate it without delivering frames"
             ),
             decision: L10n.tr("Start with a conservative UVC compatibility format: %@", selectedFormat.label)
         )
@@ -47,17 +58,26 @@ struct HikvisionCameraProfile {
 
     func outputPixelFormatEvent(
         for device: AVCaptureDevice,
-        outputPixelFormat: FourCharCode
+        outputPixelFormat: FourCharCode,
+        supportedPixelFormats: [FourCharCode],
+        useHikvisionCompatibility: Bool
     ) -> FallbackEvent? {
-        guard matches(device) else {
+        guard useHikvisionCompatibility else {
             return nil
         }
 
+        let supported = supportedPixelFormats
+            .map(pixelFormatName)
+            .joined(separator: ", ")
+
         return FallbackEvent(
             stage: "output_pixel_format",
-            reason: L10n.tr("Hikvision Android preview config requests YUY2 before starting stream callbacks"),
+            reason: L10n.tr(
+                "Hikvision Windows DirectShow can read the camera, but macOS CVPixelBuffer output should use a format AVFoundation can reliably deliver. Supported outputs: %@",
+                supported.isEmpty ? L10n.tr("Unknown") : supported
+            ),
             decision: L10n.tr(
-                "Request %@ CVPixelBuffer output when AVFoundation supports it",
+                "Request %@ CVPixelBuffer output and keep the UVC active format selection separate from the app pixel-buffer format",
                 pixelFormatName(outputPixelFormat)
             )
         )

@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  macos:
+    name: macOS build and verify
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+          xcrun --sdk macosx --show-sdk-path
+
+      - name: Install SwiftLint
+        run: |
+          if ! command -v swiftlint >/dev/null 2>&1; then
+            brew install swiftlint
+          fi
+
+      - name: Verify localization sources
+        run: scripts/verify-localization.sh Resources Info.plist
+
+      - name: SwiftLint
+        run: swiftlint lint Sources --strict --quiet
+
+      - name: Swift 6 strict typecheck
+        run: |
+          SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
+          ARCH="$(uname -m)"
+          xcrun swiftc -sdk "$SDKROOT" -target "$ARCH-apple-macosx15.0" \
+            -parse-as-library -swift-version 6 -strict-concurrency=complete \
+            -warn-concurrency -warnings-as-errors \
+            -typecheck \
+            -framework AppKit \
+            -framework AVFoundation \
+            -framework CoreImage \
+            -framework CoreMedia \
+            -framework CoreVideo \
+            -framework ImageIO \
+            -framework IOKit \
+            -framework Metal \
+            -framework QuartzCore \
+            -framework SwiftUI \
+            -framework UniformTypeIdentifiers \
+            $(find Sources -name '*.swift' | sort)
+
+      - name: Build
+        run: make clean build
+
+      - name: Verify app bundle
+        run: scripts/verify-app.sh .build/ThermoCamUVC.app
+
+      - name: Verify package target
+        run: make package
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ThermoCamUVC-macos-adhoc
+          path: |
+            dist/*.zip
+            dist/SHA256SUMS.txt

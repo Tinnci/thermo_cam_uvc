@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="ThermoCam UVC app icon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#263044"/>
+      <stop offset="1" stop-color="#080c16"/>
+    </linearGradient>
+    <linearGradient id="thermal" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#12203e"/>
+      <stop offset="0.3" stop-color="#1c5392"/>
+      <stop offset="0.52" stop-color="#19979d"/>
+      <stop offset="0.7" stop-color="#eecc54"/>
+      <stop offset="0.86" stop-color="#eb5b37"/>
+      <stop offset="1" stop-color="#f7f3d8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="214" fill="url(#bg)"/>
+  <rect x="120" y="150" width="784" height="670" rx="94" fill="#111722" stroke="#697688" stroke-opacity=".36" stroke-width="4"/>
+  <rect x="180" y="220" width="664" height="480" rx="62" fill="url(#thermal)"/>
+  <circle cx="512" cy="512" r="182" fill="#11161f" stroke="#d9e0e0" stroke-width="12"/>
+  <circle cx="512" cy="512" r="122" fill="#0b0f18" stroke="#3ad0c3" stroke-opacity=".72" stroke-width="9"/>
+  <circle cx="512" cy="512" r="60" fill="#132644"/>
+  <circle cx="452" cy="440" r="33" fill="#f5faf6" opacity=".72"/>
+  <path d="M314 790c0-23 19-42 42-42h312c23 0 42 19 42 42s-19 42-42 42H356c-23 0-42-19-42-42z" fill="#ecf1ee" opacity=".92"/>
+  <rect x="394" y="777" width="236" height="28" rx="14" fill="#19212d"/>
+</svg>

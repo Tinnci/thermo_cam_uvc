@@ -109,7 +109,10 @@ extension CaptureSessionController {
                     throw CameraCaptureError.cannotStartSession
                 }
 
-                self.scheduleFirstFrameWatchdog(generation: generation)
+                self.scheduleFirstFrameWatchdog(
+                    generation: generation,
+                    requiresNativeBackendOnNoFrames: result.requiresNativeBackendOnNoFrames
+                )
 
                 DispatchQueue.main.async {
                     self.selectedDeviceID = result.deviceID
@@ -147,6 +150,7 @@ extension CaptureSessionController {
 
             DispatchQueue.main.async {
                 self.diagnostics = .empty
+                self.previewImage = nil
                 self.thermalInspection = .empty
                 self.roiMeasurement = .unsupported
             }

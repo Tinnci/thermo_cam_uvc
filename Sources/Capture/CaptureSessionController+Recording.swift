@@ -69,8 +69,44 @@ extension CaptureSessionController {
                 try? FileManager.default.removeItem(at: url)
             }
 
+            guard self.ensureMovieOutputAttached() else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.recordingStatus = L10n.tr("Movie recording output is unavailable")
+                    self?.recordingAvailable = false
+                }
+                return
+            }
+
             self.movieOutput.startRecording(to: url, recordingDelegate: self)
         }
+    }
+
+    private func ensureMovieOutputAttached() -> Bool {
+        if session.outputs.contains(where: { $0 === movieOutput }) {
+            return true
+        }
+
+        session.beginConfiguration()
+        defer { session.commitConfiguration() }
+
+        guard session.canAddOutput(movieOutput) else {
+            return false
+        }
+
+        session.addOutput(movieOutput)
+        movieOutput.connection(with: .video)?.isEnabled = true
+        return true
+    }
+
+    private func detachMovieOutputIfIdle() {
+        guard !movieOutput.isRecording,
+              session.outputs.contains(where: { $0 === movieOutput }) else {
+            return
+        }
+
+        session.beginConfiguration()
+        session.removeOutput(movieOutput)
+        session.commitConfiguration()
     }
 }
 
@@ -92,6 +128,10 @@ extension CaptureSessionController: AVCaptureFileOutputRecordingDelegate {
         from connections: [AVCaptureConnection],
         error: Error?
     ) {
+        sessionQueue.async { [weak self] in
+            self?.detachMovieOutputIfIdle()
+        }
+
         DispatchQueue.main.async { [weak self] in
             self?.isRecording = false
 

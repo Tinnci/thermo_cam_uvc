@@ -17,6 +17,10 @@ extension CaptureSessionController {
         let device = requestedDeviceID.flatMap { requestedID in
             discoveredDevices.first { $0.uniqueID == requestedID }
         } ?? discoveredDevices[0]
+        let useHikvisionCompatibility = shouldUseHikvisionCompatibilityProfile(
+            for: device,
+            discoveredDevices: discoveredDevices
+        )
 
         if requestedDeviceID != nil && requestedDeviceID != device.uniqueID {
             fallbackEvents.append(
@@ -29,7 +33,11 @@ extension CaptureSessionController {
         }
 
         let availableFormats = manager.formats(for: device)
-        guard let bestFormat = manager.bestFormat(for: device, in: availableFormats) else {
+        guard let bestFormat = manager.bestFormat(
+            for: device,
+            in: availableFormats,
+            useHikvisionCompatibility: useHikvisionCompatibility
+        ) else {
             throw CameraCaptureError.noUsableFormat
         }
 
@@ -37,8 +45,11 @@ extension CaptureSessionController {
             availableFormats.first { $0.id == requestedID }
         } ?? bestFormat
 
-        if requestedFormatID == nil,
-           let event = manager.hikvisionFormatProfileEvent(for: device, selectedFormat: selectedFormat) {
+        if let event = manager.hikvisionFormatProfileEvent(
+            for: device,
+            selectedFormat: selectedFormat,
+            useHikvisionCompatibility: useHikvisionCompatibility
+        ) {
             fallbackEvents.append(event)
         }
 
@@ -74,18 +85,11 @@ extension CaptureSessionController {
         videoOutput.setSampleBufferDelegate(self, queue: outputQueue)
         videoOutput.alwaysDiscardsLateVideoFrames = true
 
-        let outputPixelFormat = manager.preferredOutputPixelFormat(for: device)
-        requestedOutputPixelFormat = outputPixelFormat
-        videoOutput.videoSettings = [
-            kCVPixelBufferPixelFormatTypeKey as String: outputPixelFormat
-        ]
-
-        if let event = manager.hikvisionOutputPixelFormatEvent(
+        let outputPixelFormat = configureVideoDataOutputPixelFormat(
             for: device,
-            outputPixelFormat: outputPixelFormat
-        ) {
-            fallbackEvents.append(event)
-        }
+            useHikvisionCompatibility: useHikvisionCompatibility,
+            fallbackEvents: &fallbackEvents
+        )
 
         guard session.canAddOutput(videoOutput) else {
             session.commitConfiguration()
@@ -96,17 +100,7 @@ extension CaptureSessionController {
         videoOutput.connection(with: .video)?.isEnabled = true
 
         let canRecordMovie = session.canAddOutput(movieOutput)
-        if canRecordMovie {
-            session.addOutput(movieOutput)
-        } else {
-            fallbackEvents.append(
-                FallbackEvent(
-                    stage: "recording",
-                    reason: L10n.tr("AVCaptureSession rejected AVCaptureMovieFileOutput"),
-                    decision: L10n.tr("Disable video recording for this session")
-                )
-            )
-        }
+        fallbackEvents.append(recordingAvailabilityEvent(canRecordMovie: canRecordMovie))
 
         session.commitConfiguration()
 
@@ -116,11 +110,12 @@ extension CaptureSessionController {
             activeConfiguration: ActiveConfiguration(
                 requestedFormat: requestedFormatID == nil ? L10n.tr("Automatic") : selectedFormat.label,
                 activeFormat: manager.activeFormatDescription(for: device),
-                outputPixelFormat: pixelFormatName(outputPixelFormat)
+                outputPixelFormat: outputPixelFormat.map(pixelFormatName) ?? L10n.tr("AVFoundation automatic")
             ),
             fallbackEvents: fallbackEvents,
             controlStates: manager.controlStates(for: device),
-            recordingAvailable: canRecordMovie
+            recordingAvailable: canRecordMovie,
+            requiresNativeBackendOnNoFrames: useHikvisionCompatibility
         )
     }
 
@@ -159,5 +154,86 @@ extension CaptureSessionController {
     private func frameDuration(for fps: Double) -> CMTime {
         let timescale = CMTimeScale(max(1, Int32((fps * 1000).rounded())))
         return CMTime(value: 1000, timescale: timescale)
+    }
+
+    func shouldUseHikvisionCompatibilityProfile(
+        for device: AVCaptureDevice,
+        discoveredDevices: [AVCaptureDevice]
+    ) -> Bool {
+        if manager.isHikvisionCamera(device) {
+            return true
+        }
+
+        guard device.deviceType == .external else {
+            return false
+        }
+
+        let externalDeviceCount = discoveredDevices.filter { $0.deviceType == .external }.count
+        guard externalDeviceCount == 1 else {
+            return false
+        }
+
+        let topology = usbTopologyProbe.probeHikvisionDevice()
+        let interpretation = privateControlPolicy.interpret(topology: topology)
+        return interpretation.isHikvisionDevicePresent && interpretation.hasUVCVideoStreaming
+    }
+
+    private func configureVideoDataOutputPixelFormat(
+        for device: AVCaptureDevice,
+        useHikvisionCompatibility: Bool,
+        fallbackEvents: inout [FallbackEvent]
+    ) -> FourCharCode? {
+        let supportedOutputPixelFormats = videoOutput.availableVideoPixelFormatTypes
+
+        if useHikvisionCompatibility {
+            requestedOutputPixelFormat = nil
+            videoOutput.videoSettings = nil
+            fallbackEvents.append(
+                FallbackEvent(
+                    stage: "output_pixel_format",
+                    reason: L10n.tr(
+                        "Hikvision compatibility mode is active and fixed YUY2/BGRA/NV12 requests did not produce video"
+                    ),
+                    decision: L10n.tr("Do not request a CVPixelBuffer pixel format; let AVFoundation choose the native output")
+                )
+            )
+            return nil
+        }
+
+        let outputPixelFormat = manager.preferredOutputPixelFormat(
+            for: device,
+            supportedPixelFormats: supportedOutputPixelFormats
+        )
+        requestedOutputPixelFormat = outputPixelFormat
+        videoOutput.videoSettings = [
+            kCVPixelBufferPixelFormatTypeKey as String: outputPixelFormat
+        ]
+
+        if let event = manager.hikvisionOutputPixelFormatEvent(
+            for: device,
+            outputPixelFormat: outputPixelFormat,
+            supportedPixelFormats: supportedOutputPixelFormats,
+            useHikvisionCompatibility: useHikvisionCompatibility
+        ) {
+            fallbackEvents.append(event)
+        }
+
+        return outputPixelFormat
+    }
+
+    private func recordingAvailabilityEvent(canRecordMovie: Bool) -> FallbackEvent {
+        if canRecordMovie {
+            return FallbackEvent(
+                stage: "recording",
+                reason: L10n.tr("Movie recording output is available but not attached during preview startup"),
+                decision: L10n.tr("Attach recording output only when recording starts to keep the live preview path simple")
+            )
+        }
+
+        return FallbackEvent(
+            stage: "recording",
+            reason: L10n.tr("AVCaptureSession rejected AVCaptureMovieFileOutput"),
+            decision: L10n.tr("Disable video recording for this session")
+        )
     }
 }

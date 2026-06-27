@@ -9,6 +9,14 @@ extension ContentView {
                 .opacity(controller.isRunning ? 1 : 0.35)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
+            if let previewImage = controller.previewImage {
+                Image(previewImage, scale: 1, orientation: .up, label: Text(L10n.tr("Live camera preview")))
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black)
+            }
+
             if shouldShowPreviewOverlay {
                 VStack(spacing: 8) {
                     Image(systemName: previewStatusIcon)
@@ -38,6 +46,8 @@ extension ContentView {
                 return "hourglass"
             case .noFrames:
                 return "video.slash"
+            case .nativeBackendRequired:
+                return "externaldrive.badge.exclamationmark"
             case .failed:
                 return "exclamationmark.triangle"
             case .streaming, .stopping, .idle:
@@ -66,6 +76,12 @@ extension ContentView {
                 return L10n.tr(
                     "Camera permission is authorized and the session is running, but no sample buffer arrived. " +
                         "This points to macOS UVC negotiation or device format compatibility, not a SwiftUI drawing failure."
+                )
+            case .nativeBackendRequired:
+                return L10n.tr(
+                    "Camera permission is authorized and the session is running, but no sample buffer arrived. " +
+                        "For this HikCamera bulk-only UVC profile, macOS AVFoundation can enumerate the device but does not deliver frames. " +
+                        "A privileged exclusive native USB backend is required for preview."
                 )
             case .failed:
                 return L10n.tr("The capture session failed before delivering video.")

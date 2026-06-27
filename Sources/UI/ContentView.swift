@@ -48,7 +48,7 @@ struct ContentView: View {
                 } label: {
                     Label("Save Frame", systemImage: "camera.fill")
                 }
-                .disabled(!controller.isRunning)
+                .disabled(controller.diagnostics.totalFrames == 0)
 
                 Button {
                     controller.toggleRecording()

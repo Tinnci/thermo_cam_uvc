@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  github-release:
+    name: Build ad-hoc release
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Build package
+        run: make clean package
+
+      - name: Verify package contents
+        run: |
+          test -f dist/SHA256SUMS.txt
+          (cd dist && shasum -a 256 -c SHA256SUMS.txt)
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          gh release create "$tag" \
+            --title "ThermoCamUVC ${tag}" \
+            --notes "Ad-hoc signed macOS build. This build is not Developer ID signed and is not notarized." \
+            dist/*.zip dist/SHA256SUMS.txt

@@ -84,6 +84,7 @@
 "Waiting for first frame" = "等待第一帧";
 "Streaming" = "正在传输";
 "No frames" = "无帧";
+"Native backend required" = "需要独占 native backend";
 "Stopping" = "正在停止";
 "Failed" = "失败";
 "Stopped" = "已停止";
@@ -108,6 +109,7 @@
 "Reconfiguring camera" = "正在重新配置摄像头";
 "Starting camera" = "正在启动摄像头";
 "No frames from AVFoundation" = "AVFoundation 未输出帧";
+"Native USB backend required" = "需要独占 native USB backend";
 "Automatic" = "自动";
 
 "Preparing the AVFoundation capture session." = "正在准备 AVFoundation 采集会话。";
@@ -270,6 +272,8 @@
 "Start with a conservative UVC compatibility format: %@" = "先使用保守的 UVC 兼容格式：%@";
 "Hikvision Android preview config requests YUY2 before starting stream callbacks" = "Hikvision Android 预览配置会在启动流回调前请求 YUY2";
 "Request %@ CVPixelBuffer output when AVFoundation supports it" = "当 AVFoundation 支持时请求 %@ CVPixelBuffer 输出";
+"Hikvision Windows DirectShow can read the camera, but macOS CVPixelBuffer output should use a format AVFoundation can reliably deliver. Supported outputs: %@" = "Hikvision 在 Windows DirectShow 下可以读取相机，但 macOS 的 CVPixelBuffer 输出应使用 AVFoundation 能稳定交付的格式。支持的输出：%@";
+"Request %@ CVPixelBuffer output and keep the UVC active format selection separate from the app pixel-buffer format" = "请求 %@ CVPixelBuffer 输出，并将 UVC active format 选择与 app 像素缓冲格式分开处理";
 "continuousAutoExposure is supported" = "支持 continuousAutoExposure";
 "continuousAutoWhiteBalance is supported" = "支持 continuousAutoWhiteBalance";
 "continuousAutoFocus is supported" = "支持 continuousAutoFocus";
@@ -296,12 +300,18 @@
 "Requested format is not present in AVCaptureDevice.formats" = "请求的格式不在 AVCaptureDevice.formats 中";
 "AVCaptureSession rejected AVCaptureMovieFileOutput" = "AVCaptureSession 拒绝了 AVCaptureMovieFileOutput";
 "Disable video recording for this session" = "本次会话禁用视频录制";
+"Movie recording output is available but not attached during preview startup" = "视频录制输出可用，但预览启动期间不会挂载";
+"Attach recording output only when recording starts to keep the live preview path simple" = "仅在开始录制时挂载录制输出，让实时预览路径保持简单";
 "External UVC/DAL devices can terminate the process when forcing active frame duration" = "外置 UVC/DAL 设备在强制 active frame duration 时可能导致进程终止";
 "Use the selected active format and let AVFoundation report the actual frame duration" = "使用所选 active format，并让 AVFoundation 报告实际帧时长";
 "Requested frame rate is not inside the active format's supported ranges" = "请求帧率不在 active format 支持范围内";
 "Use the selected active format without forcing active frame duration" = "使用所选 active format，不强制 active frame duration";
 "Camera permission is %@ and AVCaptureSession is running, but AVCaptureVideoDataOutput delivered no frame within %@ seconds for %@ / %@" = "摄像头权限为 %@，AVCaptureSession 正在运行，但 AVCaptureVideoDataOutput 在 %@ 秒内没有为 %@ / %@ 输出帧";
 "Treat this as a macOS UVC stream negotiation failure, not a SwiftUI drawing failure. Compare the Windows UVC probe/commit parameters and try that known-good format profile before adding private writes." = "将其视为 macOS UVC 流协商失败，而不是 SwiftUI 绘制失败。先对比 Windows UVC probe/commit 参数并尝试已知可用格式 profile，再考虑添加私有写入。";
+"Treat this as a macOS AVFoundation compatibility failure for this bulk-only UVC device. Use an explicit exclusive native USB backend or capture the Windows USBPcap startup sequence; do not keep cycling AVFoundation pixel formats." = "将其视为这个 bulk-only UVC 设备的 macOS AVFoundation 兼容性失败。需要显式的独占 native USB backend，或先抓取 Windows USBPcap 启动序列；不要继续循环尝试 AVFoundation 像素格式。";
+"Camera permission is authorized and the session is running, but no sample buffer arrived. For this HikCamera bulk-only UVC profile, macOS AVFoundation can enumerate the device but does not deliver frames. A privileged exclusive native USB backend is required for preview." = "摄像头权限已授权且 session 正在运行，但没有收到 sample buffer。对于这个 HikCamera bulk-only UVC profile，macOS AVFoundation 可以枚举设备但不会输出帧。预览需要有权限的独占 native USB backend。";
+"HikCamera bulk-only UVC device reached a running AVCaptureSession, but no sample buffer arrived within %@ seconds for %@ / %@. %@" = "HikCamera bulk-only UVC 设备已经进入运行中的 AVCaptureSession，但 %@ 秒内没有为 %@ / %@ 收到 sample buffer。%@";
+"Mark HikCamera preview as requiring an exclusive native USB backend; do not keep cycling AVFoundation pixel formats." = "将 HikCamera 预览标记为需要独占 native USB backend；不要继续循环尝试 AVFoundation 像素格式。";
 "Requested %@ but received %@" = "请求 %@，但收到 %@";
 "Use delivered CVPixelBuffer format for the live processing path" = "实时处理路径使用实际收到的 CVPixelBuffer 格式";
 
@@ -312,4 +322,28 @@
 "recording" = "录制";
 "frame_rate" = "帧率";
 "stream_start" = "流启动";
+"native_backend" = "Native backend";
 "pixel_format" = "像素格式";
+
+"present" = "存在";
+"enabled" = "已启用";
+"disabled" = "已禁用";
+"missing" = "缺失";
+"yes" = "是";
+"no" = "否";
+"Output connections: videoData=%@, movieOutputAttached=%@, sessionOutputs=%@" = "输出连接：videoData=%@，movieOutputAttached=%@，sessionOutputs=%@";
+"Camera permission is %@ and AVCaptureSession is running, but AVCaptureVideoDataOutput delivered no frame within %@ seconds for %@ / %@. %@" = "摄像头权限为 %@，AVCaptureSession 正在运行，但 AVCaptureVideoDataOutput 在 %@ 秒内没有为 %@ / %@ 输出帧。%@";
+"AVCaptureSession runtime error: %@" = "AVCaptureSession 运行时错误：%@";
+"Stop capture and reconfigure the session before retrying" = "停止采集并重新配置 session 后再重试";
+"AVCaptureSession was interrupted: %@" = "AVCaptureSession 被中断：%@";
+"Wait for the system to end the interruption, then retry capture" = "等待系统结束中断，然后重试采集";
+"AVCaptureSession interruption ended" = "AVCaptureSession 中断已结束";
+"Retry capture if frames do not resume automatically" = "如果帧没有自动恢复，请重新开始采集";
+"session_runtime" = "Session 运行时";
+"session_interruption" = "Session 中断";
+"Live camera preview" = "实时相机预览";
+"AVFoundation automatic" = "AVFoundation 自动";
+"Hikvision compatibility mode is active and fixed YUY2/BGRA/NV12 requests did not produce video" = "Hikvision 兼容模式已启用，固定请求 YUY2/BGRA/NV12 都没有产生视频";
+"Do not request a CVPixelBuffer pixel format; let AVFoundation choose the native output" = "不请求 CVPixelBuffer 像素格式，让 AVFoundation 选择原生输出";
+"Hikvision compatibility mode is active and AVCaptureVideoDataOutput did not produce frames in fixed pixel-format tests" = "Hikvision 兼容模式已启用，AVCaptureVideoDataOutput 在固定像素格式测试中没有输出帧";
+"Hikvision bulk-only UVC camera detected; Windows can drive its standard UVC path, but macOS AVFoundation may enumerate it without delivering frames" = "检测到 Hikvision bulk-only UVC 摄像头；Windows 可以驱动它的标准 UVC 路径，但 macOS AVFoundation 可能只能枚举设备而不能输出帧";

@@ -84,6 +84,7 @@
 "Waiting for first frame" = "Waiting for first frame";
 "Streaming" = "Streaming";
 "No frames" = "No frames";
+"Native backend required" = "Native backend required";
 "Stopping" = "Stopping";
 "Failed" = "Failed";
 "Stopped" = "Stopped";
@@ -108,6 +109,7 @@
 "Reconfiguring camera" = "Reconfiguring camera";
 "Starting camera" = "Starting camera";
 "No frames from AVFoundation" = "No frames from AVFoundation";
+"Native USB backend required" = "Native USB backend required";
 "Automatic" = "Automatic";
 
 "Preparing the AVFoundation capture session." = "Preparing the AVFoundation capture session.";
@@ -270,6 +272,8 @@
 "Start with a conservative UVC compatibility format: %@" = "Start with a conservative UVC compatibility format: %@";
 "Hikvision Android preview config requests YUY2 before starting stream callbacks" = "Hikvision Android preview config requests YUY2 before starting stream callbacks";
 "Request %@ CVPixelBuffer output when AVFoundation supports it" = "Request %@ CVPixelBuffer output when AVFoundation supports it";
+"Hikvision Windows DirectShow can read the camera, but macOS CVPixelBuffer output should use a format AVFoundation can reliably deliver. Supported outputs: %@" = "Hikvision Windows DirectShow can read the camera, but macOS CVPixelBuffer output should use a format AVFoundation can reliably deliver. Supported outputs: %@";
+"Request %@ CVPixelBuffer output and keep the UVC active format selection separate from the app pixel-buffer format" = "Request %@ CVPixelBuffer output and keep the UVC active format selection separate from the app pixel-buffer format";
 "continuousAutoExposure is supported" = "continuousAutoExposure is supported";
 "continuousAutoWhiteBalance is supported" = "continuousAutoWhiteBalance is supported";
 "continuousAutoFocus is supported" = "continuousAutoFocus is supported";
@@ -296,12 +300,18 @@
 "Requested format is not present in AVCaptureDevice.formats" = "Requested format is not present in AVCaptureDevice.formats";
 "AVCaptureSession rejected AVCaptureMovieFileOutput" = "AVCaptureSession rejected AVCaptureMovieFileOutput";
 "Disable video recording for this session" = "Disable video recording for this session";
+"Movie recording output is available but not attached during preview startup" = "Movie recording output is available but not attached during preview startup";
+"Attach recording output only when recording starts to keep the live preview path simple" = "Attach recording output only when recording starts to keep the live preview path simple";
 "External UVC/DAL devices can terminate the process when forcing active frame duration" = "External UVC/DAL devices can terminate the process when forcing active frame duration";
 "Use the selected active format and let AVFoundation report the actual frame duration" = "Use the selected active format and let AVFoundation report the actual frame duration";
 "Requested frame rate is not inside the active format's supported ranges" = "Requested frame rate is not inside the active format's supported ranges";
 "Use the selected active format without forcing active frame duration" = "Use the selected active format without forcing active frame duration";
 "Camera permission is %@ and AVCaptureSession is running, but AVCaptureVideoDataOutput delivered no frame within %@ seconds for %@ / %@" = "Camera permission is %@ and AVCaptureSession is running, but AVCaptureVideoDataOutput delivered no frame within %@ seconds for %@ / %@";
 "Treat this as a macOS UVC stream negotiation failure, not a SwiftUI drawing failure. Compare the Windows UVC probe/commit parameters and try that known-good format profile before adding private writes." = "Treat this as a macOS UVC stream negotiation failure, not a SwiftUI drawing failure. Compare the Windows UVC probe/commit parameters and try that known-good format profile before adding private writes.";
+"Treat this as a macOS AVFoundation compatibility failure for this bulk-only UVC device. Use an explicit exclusive native USB backend or capture the Windows USBPcap startup sequence; do not keep cycling AVFoundation pixel formats." = "Treat this as a macOS AVFoundation compatibility failure for this bulk-only UVC device. Use an explicit exclusive native USB backend or capture the Windows USBPcap startup sequence; do not keep cycling AVFoundation pixel formats.";
+"Camera permission is authorized and the session is running, but no sample buffer arrived. For this HikCamera bulk-only UVC profile, macOS AVFoundation can enumerate the device but does not deliver frames. A privileged exclusive native USB backend is required for preview." = "Camera permission is authorized and the session is running, but no sample buffer arrived. For this HikCamera bulk-only UVC profile, macOS AVFoundation can enumerate the device but does not deliver frames. A privileged exclusive native USB backend is required for preview.";
+"HikCamera bulk-only UVC device reached a running AVCaptureSession, but no sample buffer arrived within %@ seconds for %@ / %@. %@" = "HikCamera bulk-only UVC device reached a running AVCaptureSession, but no sample buffer arrived within %@ seconds for %@ / %@. %@";
+"Mark HikCamera preview as requiring an exclusive native USB backend; do not keep cycling AVFoundation pixel formats." = "Mark HikCamera preview as requiring an exclusive native USB backend; do not keep cycling AVFoundation pixel formats.";
 "Requested %@ but received %@" = "Requested %@ but received %@";
 "Use delivered CVPixelBuffer format for the live processing path" = "Use delivered CVPixelBuffer format for the live processing path";
 
@@ -312,4 +322,28 @@
 "recording" = "Recording";
 "frame_rate" = "Frame rate";
 "stream_start" = "Stream start";
+"native_backend" = "Native backend";
 "pixel_format" = "Pixel format";
+
+"present" = "present";
+"enabled" = "enabled";
+"disabled" = "disabled";
+"missing" = "missing";
+"yes" = "yes";
+"no" = "no";
+"Output connections: videoData=%@, movieOutputAttached=%@, sessionOutputs=%@" = "Output connections: videoData=%@, movieOutputAttached=%@, sessionOutputs=%@";
+"Camera permission is %@ and AVCaptureSession is running, but AVCaptureVideoDataOutput delivered no frame within %@ seconds for %@ / %@. %@" = "Camera permission is %@ and AVCaptureSession is running, but AVCaptureVideoDataOutput delivered no frame within %@ seconds for %@ / %@. %@";
+"AVCaptureSession runtime error: %@" = "AVCaptureSession runtime error: %@";
+"Stop capture and reconfigure the session before retrying" = "Stop capture and reconfigure the session before retrying";
+"AVCaptureSession was interrupted: %@" = "AVCaptureSession was interrupted: %@";
+"Wait for the system to end the interruption, then retry capture" = "Wait for the system to end the interruption, then retry capture";
+"AVCaptureSession interruption ended" = "AVCaptureSession interruption ended";
+"Retry capture if frames do not resume automatically" = "Retry capture if frames do not resume automatically";
+"session_runtime" = "Session runtime";
+"session_interruption" = "Session interruption";
+"Live camera preview" = "Live camera preview";
+"AVFoundation automatic" = "AVFoundation automatic";
+"Hikvision compatibility mode is active and fixed YUY2/BGRA/NV12 requests did not produce video" = "Hikvision compatibility mode is active and fixed YUY2/BGRA/NV12 requests did not produce video";
+"Do not request a CVPixelBuffer pixel format; let AVFoundation choose the native output" = "Do not request a CVPixelBuffer pixel format; let AVFoundation choose the native output";
+"Hikvision compatibility mode is active and AVCaptureVideoDataOutput did not produce frames in fixed pixel-format tests" = "Hikvision compatibility mode is active and AVCaptureVideoDataOutput did not produce frames in fixed pixel-format tests";
+"Hikvision bulk-only UVC camera detected; Windows can drive its standard UVC path, but macOS AVFoundation may enumerate it without delivering frames" = "Hikvision bulk-only UVC camera detected; Windows can drive its standard UVC path, but macOS AVFoundation may enumerate it without delivering frames";

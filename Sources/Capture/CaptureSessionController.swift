@@ -1,4 +1,5 @@
 import AVFoundation
+import CoreGraphics
 import CoreImage
 import CoreMedia
 import CoreVideo
@@ -26,6 +27,7 @@ final class CaptureSessionController: NSObject, @unchecked Sendable {
     var isRecording = false
     var recordingStatus = L10n.tr("Idle")
     var recordingAvailable = false
+    var previewImage: CGImage?
     var thermalInspection = ThermalInspectionSnapshot.empty
     var roiMeasurement = ROITemperatureSnapshot.unsupported
     var advancedFeatureStates = AdvancedFeatureState.currentDefaults
@@ -81,7 +83,7 @@ final class CaptureSessionController: NSObject, @unchecked Sendable {
     @ObservationIgnored
     var lastFrameIntervalMS = 0.0
     @ObservationIgnored
-    var requestedOutputPixelFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+    var requestedOutputPixelFormat: FourCharCode?
     @ObservationIgnored
     var reportedPixelFormatMismatch = false
     @ObservationIgnored
@@ -90,6 +92,15 @@ final class CaptureSessionController: NSObject, @unchecked Sendable {
     var shouldEnterPrivateControlAfterStop = false
     @ObservationIgnored
     var captureGeneration = 0
+
+    override init() {
+        super.init()
+        installSessionObservers()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 
     func bootstrap() {
         authorizationState = CameraAuthorizationState(

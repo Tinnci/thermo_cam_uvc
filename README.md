@@ -44,6 +44,7 @@ More details:
 - [Building](docs/BUILDING.md)
 - [Installing ad-hoc builds](docs/INSTALL_ADHOC.md)
 - [Camera permissions](docs/CAMERA_PERMISSIONS.md)
+- [HikCamera UVC bulk diagnostics](docs/HIKCAMERA_UVC_BULK_DIAGNOSTICS.md)
 
 ## Package
 
@@ -63,14 +64,29 @@ dist/SHA256SUMS.txt
 These artifacts are not Developer ID signed and not notarized. macOS Gatekeeper
 may block them. The primary install path remains building from source.
 
+## Release Automation
+
+CI runs on `main` and pull requests with SwiftLint, localization verification,
+Swift 6 strict concurrency typecheck, bundle verification, and package creation.
+
+Tagged pushes matching `v*` build the same ad-hoc package and publish a GitHub
+Release with the zip and `SHA256SUMS.txt`:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
 ## Current Scope
 
 - Discover built-in and external AVFoundation video devices.
 - Select device, resolution, and frame rate from `AVCaptureDevice.Format`.
 - Configure `AVCaptureSession`, `AVCaptureDeviceInput`, and
   `AVCaptureVideoDataOutput`.
-- Request NV12 pixel buffers from `AVCaptureVideoDataOutput`; if macOS delivers
-  another `CVPixelBuffer` format, record the mismatch as a pixel-format fallback.
+- Use AVFoundation preview and sample-buffer paths for cameras that deliver
+  frames. For the known HikCamera bulk-only profile, the app reports a
+  compatibility failure instead of cycling pixel formats or pretending a
+  preview-layer-only path is working.
 - Import delivered `CVPixelBuffer` frames through `CVMetalTextureCache`.
 - Display active format, delivered pixel format, measured FPS, dropped frames,
   Metal import state, and capability-gated controls.
@@ -109,6 +125,8 @@ may block them. The primary install path remains building from source.
   processed feed must appear in apps such as Zoom, Teams, FaceTime, or browsers.
 - The main app keeps zero third-party runtime dependencies. Do not add
   `libusb`, `libuvc`, or a vendor binary SDK to the AVFoundation capture path.
+  Any HikCamera native USB backend must be an explicit exclusive-mode helper or
+  system extension, not hidden inside the normal preview path.
 
 ## License
 

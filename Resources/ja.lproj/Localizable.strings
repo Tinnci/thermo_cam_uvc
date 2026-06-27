@@ -84,6 +84,7 @@
 "Waiting for first frame" = "最初のフレームを待機中";
 "Streaming" = "ストリーミング中";
 "No frames" = "フレームなし";
+"Native backend required" = "排他的 native backend が必要";
 "Stopping" = "停止中";
 "Failed" = "失敗";
 "Stopped" = "停止済み";
@@ -108,6 +109,7 @@
 "Reconfiguring camera" = "カメラを再構成中";
 "Starting camera" = "カメラを開始中";
 "No frames from AVFoundation" = "AVFoundation からフレームが出力されません";
+"Native USB backend required" = "排他的 native USB backend が必要";
 "Automatic" = "自動";
 
 "Preparing the AVFoundation capture session." = "AVFoundation キャプチャセッションを準備中です。";
@@ -270,6 +272,8 @@
 "Start with a conservative UVC compatibility format: %@" = "保守的な UVC 互換フォーマットから開始: %@";
 "Hikvision Android preview config requests YUY2 before starting stream callbacks" = "Hikvision Android プレビュー設定はストリームコールバック開始前に YUY2 を要求します";
 "Request %@ CVPixelBuffer output when AVFoundation supports it" = "AVFoundation が対応している場合は %@ CVPixelBuffer 出力を要求";
+"Hikvision Windows DirectShow can read the camera, but macOS CVPixelBuffer output should use a format AVFoundation can reliably deliver. Supported outputs: %@" = "Hikvision は Windows DirectShow では読み取れますが、macOS の CVPixelBuffer 出力には AVFoundation が安定して配信できる形式を使う必要があります。対応出力: %@";
+"Request %@ CVPixelBuffer output and keep the UVC active format selection separate from the app pixel-buffer format" = "%@ CVPixelBuffer 出力を要求し、UVC active format の選択をアプリ側のピクセルバッファ形式から分離します";
 "continuousAutoExposure is supported" = "continuousAutoExposure に対応";
 "continuousAutoWhiteBalance is supported" = "continuousAutoWhiteBalance に対応";
 "continuousAutoFocus is supported" = "continuousAutoFocus に対応";
@@ -296,12 +300,18 @@
 "Requested format is not present in AVCaptureDevice.formats" = "要求したフォーマットは AVCaptureDevice.formats にありません";
 "AVCaptureSession rejected AVCaptureMovieFileOutput" = "AVCaptureSession が AVCaptureMovieFileOutput を拒否しました";
 "Disable video recording for this session" = "このセッションではビデオ録画を無効化";
+"Movie recording output is available but not attached during preview startup" = "動画録画出力は利用可能ですが、プレビュー起動中には接続しません";
+"Attach recording output only when recording starts to keep the live preview path simple" = "ライブプレビュー経路を単純に保つため、録画開始時だけ録画出力を接続します";
 "External UVC/DAL devices can terminate the process when forcing active frame duration" = "外部 UVC/DAL デバイスでは active frame duration を強制するとプロセスが終了することがあります";
 "Use the selected active format and let AVFoundation report the actual frame duration" = "選択した active format を使用し、実際のフレーム時間は AVFoundation に報告させます";
 "Requested frame rate is not inside the active format's supported ranges" = "要求したフレームレートは active format の対応範囲外です";
 "Use the selected active format without forcing active frame duration" = "active frame duration を強制せず、選択した active format を使用します";
 "Camera permission is %@ and AVCaptureSession is running, but AVCaptureVideoDataOutput delivered no frame within %@ seconds for %@ / %@" = "カメラ権限は %@ で AVCaptureSession は実行中ですが、AVCaptureVideoDataOutput は %@ 秒以内に %@ / %@ のフレームを出力しませんでした";
 "Treat this as a macOS UVC stream negotiation failure, not a SwiftUI drawing failure. Compare the Windows UVC probe/commit parameters and try that known-good format profile before adding private writes." = "これは SwiftUI の描画失敗ではなく、macOS UVC ストリームネゴシエーション失敗として扱ってください。プライベート書き込みを追加する前に Windows の UVC probe/commit パラメータと比較し、既知の正常なフォーマットプロファイルを試してください。";
+"Treat this as a macOS AVFoundation compatibility failure for this bulk-only UVC device. Use an explicit exclusive native USB backend or capture the Windows USBPcap startup sequence; do not keep cycling AVFoundation pixel formats." = "これはこの bulk-only UVC デバイスに対する macOS AVFoundation 互換性失敗として扱います。明示的な排他的 native USB backend を使うか、Windows USBPcap 起動シーケンスを取得してください。AVFoundation のピクセル形式を循環し続けないでください。";
+"Camera permission is authorized and the session is running, but no sample buffer arrived. For this HikCamera bulk-only UVC profile, macOS AVFoundation can enumerate the device but does not deliver frames. A privileged exclusive native USB backend is required for preview." = "カメラ権限は許可され session は実行中ですが、sample buffer が到着していません。この HikCamera bulk-only UVC profile では、macOS AVFoundation はデバイスを列挙できますがフレームを出力しません。プレビューには権限を持つ排他的 native USB backend が必要です。";
+"HikCamera bulk-only UVC device reached a running AVCaptureSession, but no sample buffer arrived within %@ seconds for %@ / %@. %@" = "HikCamera bulk-only UVC デバイスは実行中の AVCaptureSession に到達しましたが、%@ 秒以内に %@ / %@ の sample buffer が到着しませんでした。%@";
+"Mark HikCamera preview as requiring an exclusive native USB backend; do not keep cycling AVFoundation pixel formats." = "HikCamera プレビューを排他的 native USB backend 必須としてマークし、AVFoundation のピクセル形式を循環し続けないでください。";
 "Requested %@ but received %@" = "%@ を要求しましたが %@ を受信しました";
 "Use delivered CVPixelBuffer format for the live processing path" = "ライブ処理パスでは実際に受信した CVPixelBuffer 形式を使用";
 
@@ -312,4 +322,28 @@
 "recording" = "録画";
 "frame_rate" = "フレームレート";
 "stream_start" = "ストリーム開始";
+"native_backend" = "Native backend";
 "pixel_format" = "ピクセル形式";
+
+"present" = "あり";
+"enabled" = "有効";
+"disabled" = "無効";
+"missing" = "なし";
+"yes" = "はい";
+"no" = "いいえ";
+"Output connections: videoData=%@, movieOutputAttached=%@, sessionOutputs=%@" = "出力接続: videoData=%@, movieOutputAttached=%@, sessionOutputs=%@";
+"Camera permission is %@ and AVCaptureSession is running, but AVCaptureVideoDataOutput delivered no frame within %@ seconds for %@ / %@. %@" = "カメラ権限は %@ で AVCaptureSession は実行中ですが、AVCaptureVideoDataOutput は %@ 秒以内に %@ / %@ のフレームを出力しませんでした。%@";
+"AVCaptureSession runtime error: %@" = "AVCaptureSession ランタイムエラー: %@";
+"Stop capture and reconfigure the session before retrying" = "再試行前にキャプチャを停止して session を再構成します";
+"AVCaptureSession was interrupted: %@" = "AVCaptureSession が中断されました: %@";
+"Wait for the system to end the interruption, then retry capture" = "システムが中断を終了するのを待ってからキャプチャを再試行します";
+"AVCaptureSession interruption ended" = "AVCaptureSession の中断が終了しました";
+"Retry capture if frames do not resume automatically" = "フレームが自動的に再開しない場合はキャプチャを再試行します";
+"session_runtime" = "Session ランタイム";
+"session_interruption" = "Session 中断";
+"Live camera preview" = "ライブカメラプレビュー";
+"AVFoundation automatic" = "AVFoundation 自動";
+"Hikvision compatibility mode is active and fixed YUY2/BGRA/NV12 requests did not produce video" = "Hikvision 互換モードが有効で、固定の YUY2/BGRA/NV12 要求では映像が出ませんでした";
+"Do not request a CVPixelBuffer pixel format; let AVFoundation choose the native output" = "CVPixelBuffer ピクセル形式を要求せず、AVFoundation にネイティブ出力を選択させます";
+"Hikvision compatibility mode is active and AVCaptureVideoDataOutput did not produce frames in fixed pixel-format tests" = "Hikvision 互換モードが有効で、固定ピクセル形式テストでは AVCaptureVideoDataOutput がフレームを出力しませんでした";
+"Hikvision bulk-only UVC camera detected; Windows can drive its standard UVC path, but macOS AVFoundation may enumerate it without delivering frames" = "Hikvision の bulk-only UVC カメラを検出しました。Windows は標準 UVC 経路を駆動できますが、macOS AVFoundation は列挙できてもフレームを出力できない場合があります";

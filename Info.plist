@@ -11,6 +11,8 @@
     <string>com.tinnci.thermocamuvc</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>CFBundleName</key>
     <string>ThermoCam UVC</string>
     <key>CFBundleDisplayName</key>
