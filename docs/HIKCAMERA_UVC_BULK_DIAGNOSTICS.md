@@ -8,6 +8,7 @@ VID: 0x2bdf
 PID: 0x0101
 USB product: HikCamera
 Serial: 12345678
+USB bcdDevice: 0x0409 (4.09)
 UVC version: 1.10
 ```
 
@@ -83,6 +84,35 @@ as a normal user:
 CLAIM_FAILED: Access denied
 ```
 
+After detaching and claiming the VideoControl and VideoStreaming interfaces as
+root, read-only control probing succeeds:
+
+```sh
+sudo .venv/bin/python scripts/uvc_claimed_control_read_probe.py
+```
+
+Current/default class-control state:
+
+```text
+VS_PROBE GET_CUR:
+    format=1, frame=3, interval=333333, maxFrame=460800, maxPayload=16384
+    YUY2 640x360 @ 30 fps
+
+VS_PROBE GET_DEF:
+    format=1, frame=1, interval=400000, maxFrame=38400, maxPayload=16384
+    YUY2 120x160 @ 25 fps
+
+VS_PROBE GET_MAX:
+    format=3, frame=2, interval=333333, maxFrame=4147200, maxPayload=16384
+```
+
+The Hikvision Extension Unit currently does not expose a readable firmware
+version through the scanned controls:
+
+```text
+unit=10 control=1..7 INFO=00 LEN=0000
+```
+
 Running the same experiment with `sudo` confirms that this is not enough for a
 normal app, but it is enough to test an exclusive native backend:
 
@@ -97,30 +127,44 @@ With root and kernel-driver detach, libusb can temporarily detach Apple's UVC
 driver, claim interface 1, send standard UVC `VS_PROBE` / `VS_COMMIT`, and read
 from bulk endpoint `0x81`.
 
-One run produced a complete JPEG frame:
+The strongest positive native-backend result is `MJPG 240x320 @ 30 fps`:
+
+```sh
+sudo .venv/bin/python scripts/uvc_bulk_stream_experiment.py \
+  --advanced-uvc-stream \
+  --detach-kernel-driver \
+  --claim-control-interface \
+  --mode mjpg-240x320-30 \
+  --timeout 6 \
+  --output .analysis/uvc_mjpg_240x320.raw
+```
+
+That produced a complete JPEG frame:
 
 ```text
 JPEG image data, 240x320
 ```
 
-This matched the device's current `VS_PROBE` / `VS_COMMIT` state:
+The negotiated `VS_PROBE` / `VS_COMMIT` state was:
 
 ```text
 format=2, frame=2, interval=333333, maxFrame=4147200, maxPayload=16384
 ```
 
-Repeated attempts after USB reset negotiated the standard controls but did not
-reliably produce frames. That means the native path is possible, but the startup
-sequence is not yet complete.
-
-Read-only probing of Hikvision Extension Unit 10 Control 1 after detaching the
-VideoControl interface returned no meaningful state:
+The other allowlisted modes in the same run negotiated successfully but did not
+produce packets within the timeout:
 
 ```text
-GET_INFO: 00
-GET_LEN: 0000
-GET_CUR: all zeroes
+MJPG 120x160 @ 25 fps: no data
+MJPG 640x360 @ 30 fps: no data
+YUY2 120x160 @ 25 fps: no data
+YUY2 240x320 @ 30 fps: no data
+YUY2 640x360 @ 30 fps: no data
 ```
+
+That means the native path is possible, but the stable startup/profile sequence
+is not yet complete. The first target profile should be MJPG 240x320 @ 30 fps,
+not YUY2.
 
 ## Interpretation
 
@@ -185,9 +229,9 @@ but it does not yet prove a stable frame loop. The remaining unknowns are:
 - Whether Windows sends any vendor/class request before `VS_PROBE` / `VS_COMMIT`.
 - Whether the camera requires a specific current state, drain, reset, or
   endpoint sequence before bulk packets start.
-- Why a request for YUY2 640x360 returned a JPEG 240x320 frame in one run.
-- Whether the observed JPEG was an active frame from a previously started stream
-  or a stale device/driver state.
+- Whether MJPG 240x320 @ 30 fps is the same profile Windows Camera chooses.
+- Whether the other advertised modes require a vendor/class request, endpoint
+  drain, or device state transition before packets start.
 
 The next high-value artifact is still a Windows USBPcap trace of Windows Camera
 opening the device.
