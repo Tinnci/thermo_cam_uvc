@@ -8,8 +8,8 @@ struct MetalImportSnapshot: Equatable {
     let usesMetal: Bool
 
     static let idle = MetalImportSnapshot(
-        status: "Idle",
-        textureDescription: "None",
+        status: L10n.tr("Idle"),
+        textureDescription: L10n.tr("None"),
         usesMetal: false
     )
 }
@@ -40,16 +40,16 @@ final class MetalFramePipeline {
     func importPixelBuffer(_ pixelBuffer: CVPixelBuffer) -> MetalImportSnapshot {
         guard device != nil else {
             return MetalImportSnapshot(
-                status: "Metal unavailable",
-                textureDescription: "CPU CVPixelBuffer path",
+                status: L10n.tr("Metal unavailable"),
+                textureDescription: L10n.tr("CPU CVPixelBuffer path"),
                 usesMetal: false
             )
         }
 
         guard let textureCache else {
             return MetalImportSnapshot(
-                status: "CVMetalTextureCache unavailable",
-                textureDescription: "CPU CVPixelBuffer path",
+                status: L10n.tr("CVMetalTextureCache unavailable"),
+                textureDescription: L10n.tr("CPU CVPixelBuffer path"),
                 usesMetal: false
             )
         }
@@ -77,15 +77,15 @@ final class MetalFramePipeline {
 
             if lumaStatus == kCVReturnSuccess && chromaStatus == kCVReturnSuccess {
                 return MetalImportSnapshot(
-                    status: "OK",
-                    textureDescription: "NV12 luma+chroma textures",
+                    status: L10n.tr("OK"),
+                    textureDescription: L10n.tr("NV12 luma+chroma textures"),
                     usesMetal: true
                 )
             }
 
             return MetalImportSnapshot(
-                status: "NV12 import failed \(lumaStatus)/\(chromaStatus)",
-                textureDescription: "CPU CVPixelBuffer path",
+                status: L10n.tr("NV12 import failed %@/%@", "\(lumaStatus)", "\(chromaStatus)"),
+                textureDescription: L10n.tr("CPU CVPixelBuffer path"),
                 usesMetal: false
             )
         }
@@ -101,15 +101,15 @@ final class MetalFramePipeline {
 
         if bgraStatus == kCVReturnSuccess {
             return MetalImportSnapshot(
-                status: "OK",
-                textureDescription: "BGRA texture",
+                status: L10n.tr("OK"),
+                textureDescription: L10n.tr("BGRA texture"),
                 usesMetal: true
             )
         }
 
         return MetalImportSnapshot(
-            status: "Texture import failed \(bgraStatus)",
-            textureDescription: "CPU CVPixelBuffer path",
+            status: L10n.tr("Texture import failed %@", "\(bgraStatus)"),
+            textureDescription: L10n.tr("CPU CVPixelBuffer path"),
             usesMetal: false
         )
     }

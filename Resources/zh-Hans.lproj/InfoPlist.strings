@@ -1,0 +1,3 @@
+"CFBundleDisplayName" = "ThermoCam UVC";
+"CFBundleName" = "ThermoCam UVC";
+"NSCameraUsageDescription" = "ThermoCam UVC 需要摄像头权限来采集和处理 UVC 视频帧。";

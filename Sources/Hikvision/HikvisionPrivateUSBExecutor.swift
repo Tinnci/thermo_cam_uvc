@@ -8,9 +8,9 @@ final class HikvisionPrivateUSBExecutor: @unchecked Sendable {
         guard capability.transport != .none else {
             return PrivateControlSessionPlan(
                 state: .failed,
-                title: "Private control unsupported",
+                title: L10n.tr("Private control unsupported"),
                 reason: capability.reason,
-                nextAction: "Use AVFoundation capture only",
+                nextAction: L10n.tr("Use AVFoundation capture only"),
                 failureKind: .notHikvisionDevice,
                 steps: []
             )
@@ -19,9 +19,9 @@ final class HikvisionPrivateUSBExecutor: @unchecked Sendable {
         guard capability.transport != .unknown else {
             return PrivateControlSessionPlan(
                 state: .failed,
-                title: "Topology unknown",
+                title: L10n.tr("Topology unknown"),
                 reason: capability.reason,
-                nextAction: "Refresh USB topology",
+                nextAction: L10n.tr("Refresh USB topology"),
                 failureKind: .topologyUnknown,
                 steps: []
             )
@@ -30,9 +30,9 @@ final class HikvisionPrivateUSBExecutor: @unchecked Sendable {
         if isAVFoundationRunning && capability.concurrency == .blockedByActiveCapture {
             return PrivateControlSessionPlan(
                 state: .blockedByCapture,
-                title: "Capture must stop first",
-                reason: "The selected transport cannot be used while AVFoundation owns the UVC interface",
-                nextAction: "Stop preview and enter private control mode",
+                title: L10n.tr("Capture must stop first"),
+                reason: L10n.tr("The selected transport cannot be used while AVFoundation owns the UVC interface"),
+                nextAction: L10n.tr("Stop preview and enter private control mode"),
                 failureKind: .captureStillActive,
                 steps: []
             )
@@ -41,7 +41,7 @@ final class HikvisionPrivateUSBExecutor: @unchecked Sendable {
         guard capability.readOnlyProbeAllowed else {
             return PrivateControlSessionPlan(
                 state: .failed,
-                title: "Read-only probe not allowed",
+                title: L10n.tr("Read-only probe not allowed"),
                 reason: capability.reason,
                 nextAction: capability.decision,
                 failureKind: .requiresExclusiveMode,
@@ -51,16 +51,18 @@ final class HikvisionPrivateUSBExecutor: @unchecked Sendable {
 
         return PrivateControlSessionPlan(
             state: .readyForReadOnlyProbe,
-            title: "Read-only probe session ready",
-            reason: "The current policy allows only non-mutating Hikvision private-control discovery",
-            nextAction: "Probe Extension Unit descriptors, GET_INFO, GET_LEN, and GET_CUR after transport is implemented",
+            title: L10n.tr("Read-only probe session ready"),
+            reason: L10n.tr("The current policy allows only non-mutating Hikvision private-control discovery"),
+            nextAction: L10n.tr(
+                "Probe Extension Unit descriptors, GET_INFO, GET_LEN, and GET_CUR after transport is implemented"
+            ),
             failureKind: nil,
             steps: [
-                "Confirm transport remains \(capability.transport.displayName)",
-                "Search UVC descriptors for Extension Unit entity IDs",
-                "Try allowlisted GET_INFO selectors only",
-                "Read GET_LEN before GET_CUR and verify returned lengths",
-                "Keep all SET requests blocked by policy"
+                L10n.tr("Confirm transport remains %@", capability.transport.displayName),
+                L10n.tr("Search UVC descriptors for Extension Unit entity IDs"),
+                L10n.tr("Try allowlisted GET_INFO selectors only"),
+                L10n.tr("Read GET_LEN before GET_CUR and verify returned lengths"),
+                L10n.tr("Keep all SET requests blocked by policy")
             ]
         )
     }

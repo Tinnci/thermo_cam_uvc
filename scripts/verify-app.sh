@@ -12,5 +12,8 @@ if [[ ! -d "$app_path" ]]; then
 fi
 
 plutil -lint "$app_path/Contents/Info.plist"
+if [[ -d "$app_path/Contents/Resources" ]]; then
+  scripts/verify-localization.sh "$app_path/Contents/Resources" "$app_path/Contents/Info.plist"
+fi
 codesign --verify --deep --strict --verbose=2 "$app_path"
 codesign -d --entitlements :- "$app_path" >/dev/null 2>&1

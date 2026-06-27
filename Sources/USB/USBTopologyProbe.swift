@@ -17,7 +17,7 @@ final class USBTopologyProbe: @unchecked Sendable {
             }
 
         return USBTopologySnapshot(
-            status: interfaces.isEmpty ? "No Hikvision USB interface found" : "Probed",
+            status: interfaces.isEmpty ? L10n.tr("No Hikvision USB interface found") : L10n.tr("Probed"),
             deviceSummary: deviceSummary(),
             interfaces: interfaces
         )
@@ -32,7 +32,7 @@ final class USBTopologyProbe: @unchecked Sendable {
         guard let device = devices.first(where: { dictionary in
             integerValue(dictionary["idVendor"]) == hikvisionVendorID
         }) else {
-            return "No HIKVISION USB device found"
+            return L10n.tr("No HIKVISION USB device found")
         }
 
         let vendor = stringValue(device["USB Vendor Name"])
@@ -40,11 +40,11 @@ final class USBTopologyProbe: @unchecked Sendable {
             ?? "HIKVISION"
         let product = stringValue(device["USB Product Name"])
             ?? stringValue(device["kUSBProductString"])
-            ?? "Unknown product"
-        let productID = integerValue(device["idProduct"]).map { String(format: "0x%04X", $0) } ?? "unknown PID"
+            ?? L10n.tr("Unknown product")
+        let productID = integerValue(device["idProduct"]).map { String(format: "0x%04X", $0) } ?? L10n.tr("unknown PID")
         let serial = stringValue(device["USB Serial Number"])
             ?? stringValue(device["kUSBSerialNumberString"])
-            ?? "no serial"
+            ?? L10n.tr("no serial")
 
         return "\(vendor) \(product), VID 0x2BDF, PID \(productID), serial \(serial)"
     }
@@ -111,7 +111,7 @@ final class USBTopologyProbe: @unchecked Sendable {
         let alternateSetting = integerValue(dictionary["bAlternateSetting"]) ?? 0
         let endpointCount = integerValue(dictionary["bNumEndpoints"]) ?? 0
         let productID = integerValue(dictionary["idProduct"]) ?? 0
-        let name = stringValue(dictionary["USB Interface Name"]) ?? "Interface \(number)"
+        let name = stringValue(dictionary["USB Interface Name"]) ?? L10n.tr("Interface %@", "\(number)")
 
         return USBInterfaceFact(
             id: "\(productID):\(number):\(alternateSetting)",

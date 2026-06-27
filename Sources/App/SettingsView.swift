@@ -7,13 +7,13 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Section("Capture") {
-                Toggle("Start capture on launch", isOn: $autoStartCapture)
+            Section(L10n.tr("Capture")) {
+                Toggle(L10n.tr("Start capture on launch"), isOn: $autoStartCapture)
             }
 
-            Section("Panels") {
-                Toggle("Diagnostics", isOn: $showDiagnosticsPanel)
-                Toggle("Fallbacks", isOn: $showFallbacksPanel)
+            Section(L10n.tr("Panels")) {
+                Toggle(L10n.tr("Diagnostics"), isOn: $showDiagnosticsPanel)
+                Toggle(L10n.tr("Fallbacks"), isOn: $showFallbacksPanel)
             }
         }
         .formStyle(.grouped)

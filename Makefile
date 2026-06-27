@@ -3,8 +3,11 @@ BUILD_DIR := .build
 APP_BUNDLE := $(BUILD_DIR)/$(APP_NAME).app
 CONTENTS_DIR := $(APP_BUNDLE)/Contents
 MACOS_DIR := $(CONTENTS_DIR)/MacOS
+RESOURCES_DIR := Resources
+APP_RESOURCES_DIR := $(CONTENTS_DIR)/Resources
 EXECUTABLE := $(MACOS_DIR)/$(APP_NAME)
 SOURCES := $(shell find Sources -name '*.swift' | sort)
+RESOURCE_FILES := $(shell find $(RESOURCES_DIR) -type f 2>/dev/null | sort)
 SDKROOT := $(shell xcrun --sdk macosx --show-sdk-path)
 ARCH := $(shell uname -m)
 DEPLOYMENT_TARGET := 15.0
@@ -32,9 +35,10 @@ SWIFT_FLAGS := \
 
 build: $(EXECUTABLE)
 
-$(EXECUTABLE): $(SOURCES) Info.plist ThermoCamUVC.entitlements
-	mkdir -p "$(MACOS_DIR)"
+$(EXECUTABLE): $(SOURCES) $(RESOURCE_FILES) Info.plist ThermoCamUVC.entitlements
+	mkdir -p "$(MACOS_DIR)" "$(APP_RESOURCES_DIR)"
 	cp Info.plist "$(CONTENTS_DIR)/Info.plist"
+	ditto "$(RESOURCES_DIR)" "$(APP_RESOURCES_DIR)"
 	swiftc $(SWIFT_FLAGS) $(SOURCES) -o "$(EXECUTABLE)"
 	codesign --force --sign - --entitlements ThermoCamUVC.entitlements "$(APP_BUNDLE)"
 
@@ -43,6 +47,7 @@ run: build
 
 verify: build
 	plutil -lint "$(CONTENTS_DIR)/Info.plist"
+	scripts/verify-localization.sh "$(APP_RESOURCES_DIR)" "$(CONTENTS_DIR)/Info.plist"
 	codesign --verify --deep --strict --verbose=2 "$(APP_BUNDLE)"
 	codesign -d --entitlements :- "$(APP_BUNDLE)" >/dev/null 2>&1
 

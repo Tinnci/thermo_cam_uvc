@@ -14,8 +14,10 @@ final class ThermalDataParser: @unchecked Sendable {
         if pixelFormat == kCVPixelFormatType_OneComponent16 {
             return ThermalInspectionSnapshot(
                 inspectedFrames: inspectedFrames,
-                status: "Raw 16-bit matrix detected",
-                evidence: "Delivered CVPixelBuffer format is L016. Raw samples are available; vendor temperature calibration is not applied.",
+                status: L10n.tr("Raw 16-bit matrix detected"),
+                evidence: L10n.tr(
+                    "Delivered CVPixelBuffer format is L016. Raw samples are available; vendor temperature calibration is not applied."
+                ),
                 matrixSize: dimensions
             )
         }
@@ -43,22 +45,22 @@ final class ThermalDataParser: @unchecked Sendable {
 
         if thermalKeys.isEmpty {
             let evidence = combinedKeys.isEmpty
-                ? "No sample or pixel-buffer attachments were delivered"
-                : "Attachment keys: \(combinedKeys.prefix(8).joined(separator: ", "))"
+                ? L10n.tr("No sample or pixel-buffer attachments were delivered")
+                : L10n.tr("Attachment keys: %@", combinedKeys.prefix(8).joined(separator: ", "))
 
             return ThermalInspectionSnapshot(
                 inspectedFrames: inspectedFrames,
-                status: "No radiometric matrix detected",
+                status: L10n.tr("No radiometric matrix detected"),
                 evidence: evidence,
-                matrixSize: "Unavailable; video frame is \(dimensions)"
+                matrixSize: L10n.tr("Unavailable; video frame is %@", dimensions)
             )
         }
 
         return ThermalInspectionSnapshot(
             inspectedFrames: inspectedFrames,
-            status: "Potential thermal metadata detected",
+            status: L10n.tr("Potential thermal metadata detected"),
             evidence: thermalKeys.joined(separator: ", "),
-            matrixSize: "Unknown; parser needs vendor payload layout"
+            matrixSize: L10n.tr("Unknown; parser needs vendor payload layout")
         )
     }
 
@@ -70,11 +72,11 @@ final class ThermalDataParser: @unchecked Sendable {
         let lockStatus = CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
         guard lockStatus == kCVReturnSuccess else {
             return ROITemperatureSnapshot(
-                status: "Matrix lock failed",
+                status: L10n.tr("Matrix lock failed"),
                 region: regionLabel(roi),
-                minTemperature: "Unavailable",
-                maxTemperature: "Unavailable",
-                averageTemperature: "Unavailable"
+                minTemperature: L10n.tr("Unavailable"),
+                maxTemperature: L10n.tr("Unavailable"),
+                averageTemperature: L10n.tr("Unavailable")
             )
         }
 
@@ -84,11 +86,11 @@ final class ThermalDataParser: @unchecked Sendable {
 
         guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else {
             return ROITemperatureSnapshot(
-                status: "Matrix memory unavailable",
+                status: L10n.tr("Matrix memory unavailable"),
                 region: regionLabel(roi),
-                minTemperature: "Unavailable",
-                maxTemperature: "Unavailable",
-                averageTemperature: "Unavailable"
+                minTemperature: L10n.tr("Unavailable"),
+                maxTemperature: L10n.tr("Unavailable"),
+                averageTemperature: L10n.tr("Unavailable")
             )
         }
 
@@ -100,11 +102,11 @@ final class ThermalDataParser: @unchecked Sendable {
         guard rect.xRange.lowerBound < rect.xRange.upperBound,
               rect.yRange.lowerBound < rect.yRange.upperBound else {
             return ROITemperatureSnapshot(
-                status: "ROI is empty",
+                status: L10n.tr("ROI is empty"),
                 region: regionLabel(roi),
-                minTemperature: "Unavailable",
-                maxTemperature: "Unavailable",
-                averageTemperature: "Unavailable"
+                minTemperature: L10n.tr("Unavailable"),
+                maxTemperature: L10n.tr("Unavailable"),
+                averageTemperature: L10n.tr("Unavailable")
             )
         }
 
@@ -130,11 +132,11 @@ final class ThermalDataParser: @unchecked Sendable {
         let average = count == 0 ? 0 : Double(sum) / Double(count)
 
         return ROITemperatureSnapshot(
-            status: "Raw matrix values",
+            status: L10n.tr("Raw matrix values"),
             region: "\(rect.xRange.lowerBound)..<\(rect.xRange.upperBound), \(rect.yRange.lowerBound)..<\(rect.yRange.upperBound)",
-            minTemperature: "raw \(minimum)",
-            maxTemperature: "raw \(maximum)",
-            averageTemperature: String(format: "raw %.1f", average)
+            minTemperature: L10n.tr("raw %@", "\(minimum)"),
+            maxTemperature: L10n.tr("raw %@", "\(maximum)"),
+            averageTemperature: L10n.tr("raw %.1f", average)
         )
     }
 

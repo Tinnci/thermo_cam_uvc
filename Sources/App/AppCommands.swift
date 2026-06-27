@@ -26,14 +26,14 @@ struct CaptureCommands: Commands {
     @FocusedValue(\.captureCommandActions) private var actions
 
     var body: some Commands {
-        CommandMenu("Capture") {
-            Button("Start or Stop Capture") {
+        CommandMenu(L10n.tr("Capture")) {
+            Button(L10n.tr("Start or Stop Capture")) {
                 actions?.toggleCapture()
             }
             .keyboardShortcut("r", modifiers: [.command])
             .disabled(actions == nil)
 
-            Button("Stop Capture") {
+            Button(L10n.tr("Stop Capture")) {
                 actions?.stopCapture()
             }
             .keyboardShortcut(".", modifiers: [.command])
@@ -41,13 +41,13 @@ struct CaptureCommands: Commands {
 
             Divider()
 
-            Button("Save Current Frame") {
+            Button(L10n.tr("Save Current Frame")) {
                 actions?.saveCurrentFrame()
             }
             .keyboardShortcut("s", modifiers: [.command])
             .disabled(actions == nil)
 
-            Button("Start or Stop Recording") {
+            Button(L10n.tr("Start or Stop Recording")) {
                 actions?.toggleRecording()
             }
             .keyboardShortcut("r", modifiers: [.command, .option])
@@ -55,25 +55,25 @@ struct CaptureCommands: Commands {
 
             Divider()
 
-            Button("Refresh Devices") {
+            Button(L10n.tr("Refresh Devices")) {
                 actions?.refreshDevices()
             }
             .keyboardShortcut("r", modifiers: [.command, .shift])
             .disabled(actions == nil)
 
-            Button("Apply Auto Controls") {
+            Button(L10n.tr("Apply Auto Controls")) {
                 actions?.applyAutoControls()
             }
             .disabled(actions == nil)
 
             Divider()
 
-            Button("Refresh USB Topology") {
+            Button(L10n.tr("Refresh USB Topology")) {
                 actions?.refreshUSBTopology()
             }
             .disabled(actions == nil)
 
-            Button("Enter Private Control Probe") {
+            Button(L10n.tr("Enter Private Control Probe")) {
                 actions?.enterPrivateControlMode()
             }
             .disabled(actions == nil)

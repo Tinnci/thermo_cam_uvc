@@ -9,7 +9,7 @@ final class HikvisionPrivateControlPolicy: @unchecked Sendable {
                 hasUVCVideoControl: false,
                 hasUVCVideoStreaming: false,
                 transport: .none,
-                summary: "No Hikvision USB interface was found",
+                summary: L10n.tr("No Hikvision USB interface was found"),
                 evidence: topology.deviceSummary
             )
         }
@@ -26,13 +26,13 @@ final class HikvisionPrivateControlPolicy: @unchecked Sendable {
         let summary: String
         if hasVendorSpecific {
             transport = .vendorSpecificInterface
-            summary = "Device exposes a vendor-specific sideband interface"
+            summary = L10n.tr("Device exposes a vendor-specific sideband interface")
         } else if hasVideoControl {
             transport = .uvcVideoControlInterface
-            summary = "Device exposes only UVC video control/streaming interfaces"
+            summary = L10n.tr("Device exposes only UVC video control/streaming interfaces")
         } else {
             transport = .unknown
-            summary = "Device interface topology is not recognized"
+            summary = L10n.tr("Device interface topology is not recognized")
         }
 
         return USBTopologyInterpretation(
@@ -61,10 +61,10 @@ final class HikvisionPrivateControlPolicy: @unchecked Sendable {
                 exclusiveCandidate: false,
                 readOnlyProbeAllowed: false,
                 requiresUserConfirmation: false,
-                blockedReason: "Unsupported",
-                reason: "No Hikvision USB device is present",
+                blockedReason: L10n.tr("Unsupported"),
+                reason: L10n.tr("No Hikvision USB device is present"),
                 evidence: interpretation.evidence,
-                decision: "Keep AVFoundation available for normal camera devices"
+                decision: L10n.tr("Keep AVFoundation available for normal camera devices")
             )
         }
 
@@ -81,9 +81,9 @@ final class HikvisionPrivateControlPolicy: @unchecked Sendable {
                 readOnlyProbeAllowed: true,
                 requiresUserConfirmation: true,
                 blockedReason: nil,
-                reason: "A separate vendor-specific USB interface can be used as sideband transport",
+                reason: L10n.tr("A separate vendor-specific USB interface can be used as sideband transport"),
                 evidence: interpretation.evidence,
-                decision: "Allow read-only private-control probing without stopping AVFoundation; keep writes disabled"
+                decision: L10n.tr("Allow read-only private-control probing without stopping AVFoundation; keep writes disabled")
             )
 
         case .uvcVideoControlInterface:
@@ -101,12 +101,12 @@ final class HikvisionPrivateControlPolicy: @unchecked Sendable {
                 exclusiveCandidate: true,
                 readOnlyProbeAllowed: !isAVFoundationRunning,
                 requiresUserConfirmation: true,
-                blockedReason: isAVFoundationRunning ? "Needs capture stop" : nil,
-                reason: "No independent vendor-specific interface is present; private controls may share UVC VideoControl",
+                blockedReason: isAVFoundationRunning ? L10n.tr("Needs capture stop") : nil,
+                reason: L10n.tr("No independent vendor-specific interface is present; private controls may share UVC VideoControl"),
                 evidence: interpretation.evidence,
                 decision: isAVFoundationRunning
-                    ? "Stop AVFoundation preview before entering read-only private-control probe mode"
-                    : "Enter explicit read-only private-control probe mode; do not perform write controls"
+                    ? L10n.tr("Stop AVFoundation preview before entering read-only private-control probe mode")
+                    : L10n.tr("Enter explicit read-only private-control probe mode; do not perform write controls")
             )
 
         case .none:
@@ -120,10 +120,10 @@ final class HikvisionPrivateControlPolicy: @unchecked Sendable {
                 exclusiveCandidate: false,
                 readOnlyProbeAllowed: false,
                 requiresUserConfirmation: false,
-                blockedReason: "Unsupported",
-                reason: "There is no private-control transport",
+                blockedReason: L10n.tr("Unsupported"),
+                reason: L10n.tr("There is no private-control transport"),
                 evidence: interpretation.evidence,
-                decision: "Disable private USB control"
+                decision: L10n.tr("Disable private USB control")
             )
 
         case .unknown:
@@ -137,10 +137,10 @@ final class HikvisionPrivateControlPolicy: @unchecked Sendable {
                 exclusiveCandidate: false,
                 readOnlyProbeAllowed: false,
                 requiresUserConfirmation: true,
-                blockedReason: "Unknown",
-                reason: "The USB topology does not match the known sideband or UVC-control shapes",
+                blockedReason: L10n.tr("Unknown"),
+                reason: L10n.tr("The USB topology does not match the known sideband or UVC-control shapes"),
                 evidence: interpretation.evidence,
-                decision: "Do not send private USB commands until the topology is understood"
+                decision: L10n.tr("Do not send private USB commands until the topology is understood")
             )
         }
     }
@@ -155,7 +155,14 @@ final class HikvisionPrivateControlPolicy: @unchecked Sendable {
                 return left.number < right.number
             }
             .map { interface in
-                "Interface \(interface.number): \(interface.classLabel), class \(interface.interfaceClass), subclass \(interface.interfaceSubClass), endpoints \(interface.endpointCount)"
+                L10n.tr(
+                    "Interface %@: %@, class %@, subclass %@, endpoints %@",
+                    "\(interface.number)",
+                    interface.classLabel,
+                    "\(interface.interfaceClass)",
+                    "\(interface.interfaceSubClass)",
+                    "\(interface.endpointCount)"
+                )
             }
             .joined(separator: "; ")
     }
