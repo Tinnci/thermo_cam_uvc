@@ -269,7 +269,7 @@
 "Keep all SET requests blocked by policy" = "Keep all SET requests blocked by policy";
 
 "Hikvision camera detected; Android APK uses YUY2/30fps and Windows proves a standard UVC video path exists" = "Hikvision camera detected; Android APK uses YUY2/30fps and Windows proves a standard UVC video path exists";
-"Start with a conservative UVC compatibility format: %@" = "Start with a conservative UVC compatibility format: %@";
+"Use the measured HikCamera native bulk target profile: %@" = "Use the measured HikCamera native bulk target profile: %@";
 "Hikvision Android preview config requests YUY2 before starting stream callbacks" = "Hikvision Android preview config requests YUY2 before starting stream callbacks";
 "Request %@ CVPixelBuffer output when AVFoundation supports it" = "Request %@ CVPixelBuffer output when AVFoundation supports it";
 "Hikvision Windows DirectShow can read the camera, but macOS CVPixelBuffer output should use a format AVFoundation can reliably deliver. Supported outputs: %@" = "Hikvision Windows DirectShow can read the camera, but macOS CVPixelBuffer output should use a format AVFoundation can reliably deliver. Supported outputs: %@";
@@ -298,6 +298,7 @@
 "Requested camera is no longer present" = "Requested camera is no longer present";
 "Fallback to %@" = "Fallback to %@";
 "Requested format is not present in AVCaptureDevice.formats" = "Requested format is not present in AVCaptureDevice.formats";
+"HikCamera uses the measured native bulk target profile instead of the previously selected AVFoundation format" = "HikCamera uses the measured native bulk target profile instead of the previously selected AVFoundation format";
 "AVCaptureSession rejected AVCaptureMovieFileOutput" = "AVCaptureSession rejected AVCaptureMovieFileOutput";
 "Disable video recording for this session" = "Disable video recording for this session";
 "Movie recording output is available but not attached during preview startup" = "Movie recording output is available but not attached during preview startup";
@@ -346,4 +347,4 @@
 "Hikvision compatibility mode is active and fixed YUY2/BGRA/NV12 requests did not produce video" = "Hikvision compatibility mode is active and fixed YUY2/BGRA/NV12 requests did not produce video";
 "Do not request a CVPixelBuffer pixel format; let AVFoundation choose the native output" = "Do not request a CVPixelBuffer pixel format; let AVFoundation choose the native output";
 "Hikvision compatibility mode is active and AVCaptureVideoDataOutput did not produce frames in fixed pixel-format tests" = "Hikvision compatibility mode is active and AVCaptureVideoDataOutput did not produce frames in fixed pixel-format tests";
-"Hikvision bulk-only UVC camera detected; Windows can drive its standard UVC path, but macOS AVFoundation may enumerate it without delivering frames" = "Hikvision bulk-only UVC camera detected; Windows can drive its standard UVC path, but macOS AVFoundation may enumerate it without delivering frames";
+"Hikvision bulk-only UVC camera detected; exclusive native probing produced a valid JPEG frame at MJPG 240x320 @ 30 fps" = "Hikvision bulk-only UVC camera detected; exclusive native probing produced a valid JPEG frame at MJPG 240x320 @ 30 fps";

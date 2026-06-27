@@ -120,21 +120,21 @@ normal app, but it is enough to test an exclusive native backend:
 sudo .venv/bin/python scripts/uvc_bulk_stream_experiment.py \
   --advanced-uvc-stream \
   --detach-kernel-driver \
-  --mode yuy2-640x360-30
+  --claim-control-interface
 ```
 
 With root and kernel-driver detach, libusb can temporarily detach Apple's UVC
 driver, claim interface 1, send standard UVC `VS_PROBE` / `VS_COMMIT`, and read
 from bulk endpoint `0x81`.
 
-The strongest positive native-backend result is `MJPG 240x320 @ 30 fps`:
+The default and strongest positive native-backend result is
+`MJPG 240x320 @ 30 fps`:
 
 ```sh
 sudo .venv/bin/python scripts/uvc_bulk_stream_experiment.py \
   --advanced-uvc-stream \
   --detach-kernel-driver \
   --claim-control-interface \
-  --mode mjpg-240x320-30 \
   --timeout 6 \
   --output .analysis/uvc_mjpg_240x320.raw
 ```

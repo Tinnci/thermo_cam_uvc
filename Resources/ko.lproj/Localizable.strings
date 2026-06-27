@@ -269,7 +269,7 @@
 "Keep all SET requests blocked by policy" = "모든 SET 요청을 정책으로 계속 차단";
 
 "Hikvision camera detected; Android APK uses YUY2/30fps and Windows proves a standard UVC video path exists" = "Hikvision 카메라가 감지되었습니다. Android APK는 YUY2/30fps를 사용하고 Windows는 표준 UVC 비디오 경로가 있음을 증명합니다";
-"Start with a conservative UVC compatibility format: %@" = "보수적인 UVC 호환 포맷으로 시작: %@";
+"Use the measured HikCamera native bulk target profile: %@" = "실측된 HikCamera native bulk 대상 profile 사용: %@";
 "Hikvision Android preview config requests YUY2 before starting stream callbacks" = "Hikvision Android 미리보기 구성은 스트림 콜백을 시작하기 전에 YUY2를 요청합니다";
 "Request %@ CVPixelBuffer output when AVFoundation supports it" = "AVFoundation이 지원할 때 %@ CVPixelBuffer 출력을 요청";
 "Hikvision Windows DirectShow can read the camera, but macOS CVPixelBuffer output should use a format AVFoundation can reliably deliver. Supported outputs: %@" = "Hikvision은 Windows DirectShow에서 읽을 수 있지만, macOS CVPixelBuffer 출력은 AVFoundation이 안정적으로 전달할 수 있는 형식을 사용해야 합니다. 지원 출력: %@";
@@ -298,6 +298,7 @@
 "Requested camera is no longer present" = "요청한 카메라가 더 이상 없음";
 "Fallback to %@" = "%@로 대체";
 "Requested format is not present in AVCaptureDevice.formats" = "요청한 포맷이 AVCaptureDevice.formats에 없음";
+"HikCamera uses the measured native bulk target profile instead of the previously selected AVFoundation format" = "HikCamera는 이전에 선택한 AVFoundation 포맷 대신 실측된 native bulk 대상 profile을 사용합니다";
 "AVCaptureSession rejected AVCaptureMovieFileOutput" = "AVCaptureSession이 AVCaptureMovieFileOutput을 거부함";
 "Disable video recording for this session" = "이 세션에서 비디오 녹화 비활성화";
 "Movie recording output is available but not attached during preview startup" = "동영상 녹화 출력은 사용할 수 있지만 미리보기 시작 중에는 연결하지 않음";
@@ -346,4 +347,4 @@
 "Hikvision compatibility mode is active and fixed YUY2/BGRA/NV12 requests did not produce video" = "Hikvision 호환 모드가 활성화되었고 고정 YUY2/BGRA/NV12 요청으로는 비디오가 나오지 않았음";
 "Do not request a CVPixelBuffer pixel format; let AVFoundation choose the native output" = "CVPixelBuffer 픽셀 형식을 요청하지 않고 AVFoundation이 네이티브 출력을 선택하게 함";
 "Hikvision compatibility mode is active and AVCaptureVideoDataOutput did not produce frames in fixed pixel-format tests" = "Hikvision 호환 모드가 활성화되었고 고정 픽셀 형식 테스트에서 AVCaptureVideoDataOutput이 프레임을 출력하지 않았음";
-"Hikvision bulk-only UVC camera detected; Windows can drive its standard UVC path, but macOS AVFoundation may enumerate it without delivering frames" = "Hikvision bulk-only UVC 카메라가 감지됨. Windows는 표준 UVC 경로를 구동할 수 있지만 macOS AVFoundation은 장치를 열거해도 프레임을 전달하지 못할 수 있음";
+"Hikvision bulk-only UVC camera detected; exclusive native probing produced a valid JPEG frame at MJPG 240x320 @ 30 fps" = "Hikvision bulk-only UVC 카메라가 감지됨. 독점 native probe에서 MJPG 240x320 @ 30 fps로 유효한 JPEG 프레임이 생성되었습니다";

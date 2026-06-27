@@ -240,7 +240,7 @@ def main() -> int:
     parser.add_argument("--advanced-uvc-stream", action="store_true")
     parser.add_argument("--detach-kernel-driver", action="store_true")
     parser.add_argument("--claim-control-interface", action="store_true")
-    parser.add_argument("--mode", default="yuy2-640x360-30", choices=sorted(ALLOWED_MODES))
+    parser.add_argument("--mode", default="mjpg-240x320-30", choices=sorted(ALLOWED_MODES))
     parser.add_argument("--timeout", type=float, default=5.0)
     parser.add_argument("--output", type=Path, default=Path(".analysis/uvc_bulk_first_frame.raw"))
     return run(parser.parse_args())

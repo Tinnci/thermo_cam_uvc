@@ -269,7 +269,7 @@
 "Keep all SET requests blocked by policy" = "繼續按策略阻止所有 SET 請求";
 
 "Hikvision camera detected; Android APK uses YUY2/30fps and Windows proves a standard UVC video path exists" = "偵測到 Hikvision 攝影機；Android APK 使用 YUY2/30fps，Windows 也證明存在標準 UVC 視訊路徑";
-"Start with a conservative UVC compatibility format: %@" = "先使用保守的 UVC 相容格式：%@";
+"Use the measured HikCamera native bulk target profile: %@" = "使用實測 HikCamera native bulk 目標 profile：%@";
 "Hikvision Android preview config requests YUY2 before starting stream callbacks" = "Hikvision Android 預覽設定會在啟動串流回呼前請求 YUY2";
 "Request %@ CVPixelBuffer output when AVFoundation supports it" = "當 AVFoundation 支援時請求 %@ CVPixelBuffer 輸出";
 "Hikvision Windows DirectShow can read the camera, but macOS CVPixelBuffer output should use a format AVFoundation can reliably deliver. Supported outputs: %@" = "Hikvision 在 Windows DirectShow 下可以讀取相機，但 macOS 的 CVPixelBuffer 輸出應使用 AVFoundation 能穩定交付的格式。支援的輸出：%@";
@@ -298,6 +298,7 @@
 "Requested camera is no longer present" = "請求的攝影機已不存在";
 "Fallback to %@" = "回退到 %@";
 "Requested format is not present in AVCaptureDevice.formats" = "請求的格式不在 AVCaptureDevice.formats 中";
+"HikCamera uses the measured native bulk target profile instead of the previously selected AVFoundation format" = "HikCamera 使用實測 native bulk 目標 profile，而不是之前選擇的 AVFoundation 格式";
 "AVCaptureSession rejected AVCaptureMovieFileOutput" = "AVCaptureSession 拒絕了 AVCaptureMovieFileOutput";
 "Disable video recording for this session" = "本次工作階段停用視訊錄製";
 "Movie recording output is available but not attached during preview startup" = "視訊錄製輸出可用，但預覽啟動期間不會掛載";
@@ -346,4 +347,4 @@
 "Hikvision compatibility mode is active and fixed YUY2/BGRA/NV12 requests did not produce video" = "Hikvision 相容模式已啟用，固定請求 YUY2/BGRA/NV12 都沒有產生視訊";
 "Do not request a CVPixelBuffer pixel format; let AVFoundation choose the native output" = "不請求 CVPixelBuffer 像素格式，讓 AVFoundation 選擇原生輸出";
 "Hikvision compatibility mode is active and AVCaptureVideoDataOutput did not produce frames in fixed pixel-format tests" = "Hikvision 相容模式已啟用，AVCaptureVideoDataOutput 在固定像素格式測試中沒有輸出影格";
-"Hikvision bulk-only UVC camera detected; Windows can drive its standard UVC path, but macOS AVFoundation may enumerate it without delivering frames" = "偵測到 Hikvision bulk-only UVC 攝影機；Windows 可以驅動它的標準 UVC 路徑，但 macOS AVFoundation 可能只能枚舉裝置而不能輸出影格";
+"Hikvision bulk-only UVC camera detected; exclusive native probing produced a valid JPEG frame at MJPG 240x320 @ 30 fps" = "偵測到 Hikvision bulk-only UVC 攝影機；獨占 native 探測已在 MJPG 240x320 @ 30 fps 下產生有效 JPEG 影格";

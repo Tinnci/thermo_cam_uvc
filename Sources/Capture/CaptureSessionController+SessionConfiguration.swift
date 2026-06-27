@@ -41,9 +41,10 @@ extension CaptureSessionController {
             throw CameraCaptureError.noUsableFormat
         }
 
-        let selectedFormat = requestedFormatID.flatMap { requestedID in
+        let requestedFormat = requestedFormatID.flatMap { requestedID in
             availableFormats.first { $0.id == requestedID }
-        } ?? bestFormat
+        }
+        let selectedFormat = useHikvisionCompatibility ? bestFormat : (requestedFormat ?? bestFormat)
 
         if let event = manager.hikvisionFormatProfileEvent(
             for: device,
@@ -57,7 +58,9 @@ extension CaptureSessionController {
             fallbackEvents.append(
                 FallbackEvent(
                     stage: "format_selection",
-                    reason: L10n.tr("Requested format is not present in AVCaptureDevice.formats"),
+                    reason: requestedFormat == nil
+                        ? L10n.tr("Requested format is not present in AVCaptureDevice.formats")
+                        : L10n.tr("HikCamera uses the measured native bulk target profile instead of the previously selected AVFoundation format"),
                     decision: L10n.tr("Fallback to %@", selectedFormat.label)
                 )
             )

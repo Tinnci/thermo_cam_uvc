@@ -269,7 +269,7 @@
 "Keep all SET requests blocked by policy" = "すべての SET 要求をポリシーでブロックしたままにします";
 
 "Hikvision camera detected; Android APK uses YUY2/30fps and Windows proves a standard UVC video path exists" = "Hikvision カメラを検出しました。Android APK は YUY2/30fps を使用し、Windows は標準 UVC ビデオパスが存在することを示しています";
-"Start with a conservative UVC compatibility format: %@" = "保守的な UVC 互換フォーマットから開始: %@";
+"Use the measured HikCamera native bulk target profile: %@" = "実測済みの HikCamera native bulk ターゲット profile を使用: %@";
 "Hikvision Android preview config requests YUY2 before starting stream callbacks" = "Hikvision Android プレビュー設定はストリームコールバック開始前に YUY2 を要求します";
 "Request %@ CVPixelBuffer output when AVFoundation supports it" = "AVFoundation が対応している場合は %@ CVPixelBuffer 出力を要求";
 "Hikvision Windows DirectShow can read the camera, but macOS CVPixelBuffer output should use a format AVFoundation can reliably deliver. Supported outputs: %@" = "Hikvision は Windows DirectShow では読み取れますが、macOS の CVPixelBuffer 出力には AVFoundation が安定して配信できる形式を使う必要があります。対応出力: %@";
@@ -298,6 +298,7 @@
 "Requested camera is no longer present" = "要求したカメラはもう存在しません";
 "Fallback to %@" = "%@ にフォールバック";
 "Requested format is not present in AVCaptureDevice.formats" = "要求したフォーマットは AVCaptureDevice.formats にありません";
+"HikCamera uses the measured native bulk target profile instead of the previously selected AVFoundation format" = "HikCamera は以前選択された AVFoundation 形式ではなく、実測済みの native bulk ターゲット profile を使用します";
 "AVCaptureSession rejected AVCaptureMovieFileOutput" = "AVCaptureSession が AVCaptureMovieFileOutput を拒否しました";
 "Disable video recording for this session" = "このセッションではビデオ録画を無効化";
 "Movie recording output is available but not attached during preview startup" = "動画録画出力は利用可能ですが、プレビュー起動中には接続しません";
@@ -346,4 +347,4 @@
 "Hikvision compatibility mode is active and fixed YUY2/BGRA/NV12 requests did not produce video" = "Hikvision 互換モードが有効で、固定の YUY2/BGRA/NV12 要求では映像が出ませんでした";
 "Do not request a CVPixelBuffer pixel format; let AVFoundation choose the native output" = "CVPixelBuffer ピクセル形式を要求せず、AVFoundation にネイティブ出力を選択させます";
 "Hikvision compatibility mode is active and AVCaptureVideoDataOutput did not produce frames in fixed pixel-format tests" = "Hikvision 互換モードが有効で、固定ピクセル形式テストでは AVCaptureVideoDataOutput がフレームを出力しませんでした";
-"Hikvision bulk-only UVC camera detected; Windows can drive its standard UVC path, but macOS AVFoundation may enumerate it without delivering frames" = "Hikvision の bulk-only UVC カメラを検出しました。Windows は標準 UVC 経路を駆動できますが、macOS AVFoundation は列挙できてもフレームを出力できない場合があります";
+"Hikvision bulk-only UVC camera detected; exclusive native probing produced a valid JPEG frame at MJPG 240x320 @ 30 fps" = "Hikvision の bulk-only UVC カメラを検出しました。排他的 native probe により MJPG 240x320 @ 30 fps で有効な JPEG フレームが得られました";

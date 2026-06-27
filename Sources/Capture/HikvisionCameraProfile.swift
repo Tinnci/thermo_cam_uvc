@@ -4,6 +4,12 @@ import CoreVideo
 import Foundation
 
 struct HikvisionCameraProfile {
+    static let nativeBulkFormatName = "MJPG"
+    static let nativeBulkWidth: Int32 = 240
+    static let nativeBulkHeight: Int32 = 320
+    static let nativeBulkFPS = 30.0
+    private static let mjpgMediaSubType: FourCharCode = 0x4D4A5047
+
     func preferredOutputPixelFormat(in supportedPixelFormats: [FourCharCode]) -> FourCharCode {
         let preferences = [
             kCVPixelFormatType_32BGRA,
@@ -26,7 +32,11 @@ struct HikvisionCameraProfile {
     }
 
     func compatibilityFormat(in formats: [CameraFormatInfo]) -> CameraFormatInfo? {
-        formats.min { left, right in
+        if let measuredNativeTarget = formats.first(where: isMeasuredNativeBulkTarget) {
+            return measuredNativeTarget
+        }
+
+        return formats.min { left, right in
             let leftScore = compatibilityScore(left)
             let rightScore = compatibilityScore(right)
 
@@ -50,9 +60,9 @@ struct HikvisionCameraProfile {
         return FallbackEvent(
             stage: "format_profile",
             reason: L10n.tr(
-                "Hikvision bulk-only UVC camera detected; Windows can drive its standard UVC path, but macOS AVFoundation may enumerate it without delivering frames"
+                "Hikvision bulk-only UVC camera detected; exclusive native probing produced a valid JPEG frame at MJPG 240x320 @ 30 fps"
             ),
-            decision: L10n.tr("Start with a conservative UVC compatibility format: %@", selectedFormat.label)
+            decision: L10n.tr("Use the measured HikCamera native bulk target profile: %@", selectedFormat.label)
         )
     }
 
@@ -84,17 +94,22 @@ struct HikvisionCameraProfile {
     }
 
     private func compatibilityScore(_ format: CameraFormatInfo) -> Int {
+        if isMeasuredNativeBulkTarget(format) {
+            return 0
+        }
+
         let resolutionScore: Int
-        switch (format.width, format.height) {
-        case (640, 360):
+        if format.width == Self.nativeBulkWidth && format.height == Self.nativeBulkHeight {
             resolutionScore = 0
-        case (640, 480):
+        } else if format.width == 320 && format.height == 240 {
             resolutionScore = 10
-        case (320, 240), (240, 320):
+        } else if format.width == 640 && format.height == 360 {
             resolutionScore = 20
-        default:
+        } else if format.width == 640 && format.height == 480 {
+            resolutionScore = 30
+        } else {
             let pixels = Int(format.width) * Int(format.height)
-            resolutionScore = pixels <= 640 * 512 ? 30 : 60
+            resolutionScore = pixels <= 640 * 512 ? 40 : 70
         }
 
         let frameRateScore = Int((abs(format.fps - 30) * 10).rounded())
@@ -104,18 +119,25 @@ struct HikvisionCameraProfile {
 
     private func pixelFormatScore(_ mediaSubType: FourCharCode) -> Int {
         switch mediaSubType {
-        case kCVPixelFormatType_422YpCbCr8_yuvs:
+        case Self.mjpgMediaSubType:
             return 0
+        case kCVPixelFormatType_422YpCbCr8_yuvs:
+            return 8
         case kCVPixelFormatType_422YpCbCr8:
-            return 2
-        case 0x4D4A5047:
-            return 4
+            return 10
         case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
              kCVPixelFormatType_420YpCbCr8BiPlanarFullRange:
-            return 8
-        default:
             return 12
+        default:
+            return 16
         }
+    }
+
+    private func isMeasuredNativeBulkTarget(_ format: CameraFormatInfo) -> Bool {
+        format.mediaSubType == Self.mjpgMediaSubType &&
+            format.width == Self.nativeBulkWidth &&
+            format.height == Self.nativeBulkHeight &&
+            abs(format.fps - Self.nativeBulkFPS) < 0.01
     }
 
     private func formatPreference(_ left: CameraFormatInfo, _ right: CameraFormatInfo) -> Bool {
